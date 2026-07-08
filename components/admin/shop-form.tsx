@@ -1,0 +1,261 @@
+"use client";
+
+import { createShopFromInput, updateShopFromInput } from "@/actions/shops";
+import { GalleryUploadField } from "@/components/admin/gallery-upload-field";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { MultiSelect, MultiSelectOption } from "@/components/ui/multi-select";
+import { Textarea } from "@/components/ui/textarea";
+import { useRouter } from "next/navigation";
+import { FormEvent, useState } from "react";
+
+export interface ShopFormValues {
+  id?: string;
+  name: string;
+  description?: string;
+  address: string;
+  phone: string;
+  whatsapp?: string | null;
+  workingHours?: string | null;
+  mapUrl?: string | null;
+  image?: string | null;
+  gallery?: string[];
+  categoryIds: string[];
+  vehicleTypeIds: string[];
+  brandIds: string[];
+  isFeatured?: boolean;
+  featuredSortOrder?: number;
+}
+
+interface ShopFormProps {
+  initialValues?: ShopFormValues;
+  categories: MultiSelectOption[];
+  vehicleTypes: MultiSelectOption[];
+  brands: MultiSelectOption[];
+}
+
+export function ShopForm({
+  initialValues,
+  categories,
+  vehicleTypes,
+  brands,
+}: ShopFormProps) {
+  const router = useRouter();
+  const isEditing = !!initialValues?.id;
+
+  const [name, setName] = useState(initialValues?.name ?? "");
+  const [description, setDescription] = useState(initialValues?.description ?? "");
+  const [address, setAddress] = useState(initialValues?.address ?? "");
+  const [phone, setPhone] = useState(initialValues?.phone ?? "");
+  const [whatsapp, setWhatsapp] = useState(initialValues?.whatsapp ?? "");
+  const [workingHours, setWorkingHours] = useState(initialValues?.workingHours ?? "");
+  const [mapUrl, setMapUrl] = useState(initialValues?.mapUrl ?? "");
+  const [image, setImage] = useState<string | null>(initialValues?.image ?? null);
+  const [gallery, setGallery] = useState<string[]>(
+    initialValues?.gallery?.length
+      ? initialValues.gallery
+      : initialValues?.image
+        ? [initialValues.image]
+        : [],
+  );
+  const [categoryIds, setCategoryIds] = useState<string[]>(initialValues?.categoryIds ?? []);
+  const [vehicleTypeIds, setVehicleTypeIds] = useState<string[]>(
+    initialValues?.vehicleTypeIds ?? [],
+  );
+  const [brandIds, setBrandIds] = useState<string[]>(initialValues?.brandIds ?? []);
+  const [isFeatured, setIsFeatured] = useState(initialValues?.isFeatured ?? false);
+  const [featuredSortOrder, setFeaturedSortOrder] = useState(
+    initialValues?.featuredSortOrder ?? 0,
+  );
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    const payload = {
+      name,
+      description: description || undefined,
+      address,
+      phone,
+      whatsapp: whatsapp || null,
+      workingHours: workingHours || null,
+      mapUrl: mapUrl || null,
+      image,
+      gallery,
+      categoryIds,
+      vehicleTypeIds,
+      brandIds,
+      isFeatured,
+      featuredSortOrder,
+    };
+
+    const result = isEditing
+      ? await updateShopFromInput(initialValues!.id!, payload)
+      : await createShopFromInput(payload);
+
+    setLoading(false);
+
+    if (!result.success) {
+      setError(result.error);
+      return;
+    }
+
+    router.push("/admin/shops");
+    router.refresh();
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="grid gap-6 md:grid-cols-2">
+        <div className="space-y-2">
+          <Label htmlFor="name">Dükkan Adı *</Label>
+          <Input
+            id="name"
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+            required
+            placeholder="Örn: Yılmaz Motor"
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="phone">Telefon *</Label>
+          <Input
+            id="phone"
+            value={phone}
+            onChange={(event) => setPhone(event.target.value)}
+            required
+            placeholder="0356 123 45 67"
+          />
+        </div>
+      </div>
+
+      <div className="grid gap-6 md:grid-cols-2">
+        <div className="space-y-2">
+          <Label htmlFor="whatsapp">WhatsApp</Label>
+          <Input
+            id="whatsapp"
+            value={whatsapp}
+            onChange={(event) => setWhatsapp(event.target.value)}
+            placeholder="905551112233 (ülke kodu ile)"
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="workingHours">Çalışma Saatleri</Label>
+          <Input
+            id="workingHours"
+            value={workingHours}
+            onChange={(event) => setWorkingHours(event.target.value)}
+            placeholder="Hafta içi 08:30–18:00"
+          />
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="address">Adres *</Label>
+        <Input
+          id="address"
+          value={address}
+          onChange={(event) => setAddress(event.target.value)}
+          required
+          placeholder="Tokat Sanayi Sitesi A Blok No:12"
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="mapUrl">Harita Linki (Google Maps)</Label>
+        <Input
+          id="mapUrl"
+          value={mapUrl}
+          onChange={(event) => setMapUrl(event.target.value)}
+          placeholder="https://maps.google.com/..."
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="description">Açıklama</Label>
+        <Textarea
+          id="description"
+          value={description}
+          onChange={(event) => setDescription(event.target.value)}
+          placeholder="Dükkan hakkında kısa bilgi..."
+        />
+      </div>
+
+      <GalleryUploadField
+        cover={image}
+        gallery={gallery}
+        onChange={({ cover, gallery: nextGallery }) => {
+          setImage(cover);
+          setGallery(nextGallery);
+        }}
+      />
+
+      <div className="grid gap-6 md:grid-cols-3">
+        <MultiSelect
+          label="Kategoriler"
+          options={categories}
+          selected={categoryIds}
+          onChange={setCategoryIds}
+          placeholder="Kategori seçin..."
+        />
+        <MultiSelect
+          label="Araç Tipleri"
+          options={vehicleTypes}
+          selected={vehicleTypeIds}
+          onChange={setVehicleTypeIds}
+          placeholder="Araç tipi seçin..."
+        />
+        <MultiSelect
+          label="Markalar"
+          options={brands}
+          selected={brandIds}
+          onChange={setBrandIds}
+          placeholder="Marka seçin..."
+        />
+      </div>
+
+      <div className="grid gap-4 rounded-lg border border-border p-4 md:grid-cols-[1fr_160px] md:items-center">
+        <label className="flex items-center gap-3">
+          <input
+            type="checkbox"
+            checked={isFeatured}
+            onChange={(event) => setIsFeatured(event.target.checked)}
+            className="h-4 w-4 rounded accent-primary"
+          />
+          <div>
+            <p className="text-sm font-medium">Öne çıkan firma</p>
+            <p className="text-xs text-muted-foreground">
+              Ana sayfada &quot;Öne Çıkan Firmalar&quot; bölümünde gösterilir.
+            </p>
+          </div>
+        </label>
+        <div className="space-y-2">
+          <Label htmlFor="featuredSortOrder">Öne çıkma sırası</Label>
+          <Input
+            id="featuredSortOrder"
+            type="number"
+            min={0}
+            value={featuredSortOrder}
+            onChange={(event) => setFeaturedSortOrder(Number(event.target.value))}
+            disabled={!isFeatured}
+          />
+        </div>
+      </div>
+
+      {error && <p className="text-sm text-red-600">{error}</p>}
+
+      <div className="flex gap-3">
+        <Button type="submit" disabled={loading}>
+          {loading ? "Kaydediliyor..." : isEditing ? "Güncelle" : "Dükkan Ekle"}
+        </Button>
+        <Button type="button" variant="outline" onClick={() => router.back()}>
+          İptal
+        </Button>
+      </div>
+    </form>
+  );
+}
