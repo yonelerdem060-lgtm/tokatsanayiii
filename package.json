@@ -1,6 +1,7 @@
 {
   "name": "tokat-sanayi-rehberi",
   "version": "0.1.0",
+  "description": "Tokat Sanayi Sitesi dijital rehberi — kategori, marka ve araç tipi ile esnaf arama platformu",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",

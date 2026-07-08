@@ -1,36 +1,159 @@
-# Sanayi Rehberi — Geliştirme Notları
+# Tokat Sanayi Sitesi Rehberi
 
-## Kurulum
+Tokat Sanayi Sitesi için geliştirilmiş dijital rehber platformu. Esnaf ve müşteriler; kategori, araç tipi, marka ve metin araması ile firmalara hızlıca ulaşır. Telefon, WhatsApp, adres ve çalışma saatleri tek ekranda sunulur.
+
+**Canlı repo:** [github.com/bariscanyonel60/sanaitokattttt](https://github.com/bariscanyonel60/sanaitokattttt)
+
+---
+
+## Özellikler
+
+### Ziyaretçi (public)
+- Ana sayfa arama ve filtreleme (kategori, araç tipi, marka, firma adı/telefon/adres)
+- Mobil uyumlu arayüz: sticky arama, filtre paneli, alt navigasyon
+- Dükkan kartlarında tek tıkla **Ara** ve **WhatsApp**
+- Dükkan detay sayfası (`/dukkan/[slug]`) — galeri, harita, çalışma saatleri
+- Popüler kategoriler, araç tipleri, marka rehberi
+- Sponsorlu kampanyalar ve öne çıkan firmalar
+- Haber / duyuru bölümü
+- Mobilya & Kereste bölgesi sayfası
+- İletişim formu (honeypot + rate limit)
+- SEO: `sitemap.xml`, `robots.txt`, Open Graph meta
+
+### Yönetim (admin)
+- Dükkan CRUD — fotoğraf, galeri, slug, WhatsApp, harita, öne çıkan sıra
+- Kategori, araç tipi, marka yönetimi
+- Reklam slider ve haber yönetimi (kapak görseli)
+- İletişim mesajları (okundu işaretleme, arama)
+- Site ayarları CMS (iletişim, çalışma saatleri, hakkımızda metinleri)
+- Admin şifre değiştirme
+
+---
+
+## Teknoloji
+
+| Katman | Teknoloji |
+|--------|-----------|
+| Framework | Next.js 15 (App Router) |
+| Dil | TypeScript |
+| Veritabanı | Prisma ORM — SQLite (geliştirme) / PostgreSQL (production) |
+| Auth | Auth.js (NextAuth v5) |
+| Stil | Tailwind CSS 4 |
+| Animasyon | Framer Motion |
+| Doğrulama | Zod |
+
+---
+
+## Hızlı Başlangıç (Yerel)
 
 ```bash
+# 1. Bağımlılıklar
 npm install
-cp .env.example .env
-# .env içinde DATABASE_URL ve AUTH_SECRET değerlerini düzenleyin
 
-npm run db:push      # veya: npm run db:migrate
-npm run db:seed      # örnek veri + admin hesabı
+# 2. Ortam değişkenleri
+cp .env.example .env
+# .env içinde AUTH_SECRET değerini güçlü bir rastgele string yapın
+
+# 3. Veritabanı
+npm run db:push
+npm run db:seed
+
+# 4. Geliştirme sunucusu
 npm run dev
 ```
 
-## Server Actions
+Tarayıcıda: [http://localhost:3000](http://localhost:3000)
 
-Tüm veritabanı işlemleri `actions/` klasöründe:
+### Varsayılan admin (seed sonrası)
 
-| Dosya | Fonksiyonlar |
-|---|---|
-| `actions/shops.ts` | `getShops`, `getShopBySlug`, `createShop`, `updateShop`, `deleteShop` |
-| `actions/categories.ts` | `getCategories`, `createCategory`, `updateCategory`, `deleteCategory` |
-| `actions/vehicle-types.ts` | `getVehicleTypes`, `createVehicleType`, ... |
-| `actions/brands.ts` | `getBrands`, `createBrand`, ... |
-| `actions/promo-slides.ts` | `getActivePromoSlides`, `createPromoSlideFromInput`, ... |
-| `actions/news.ts` | `getPublishedNews`, `createNewsFromInput`, ... |
-| `actions/contact.ts` | `submitContactForm`, `getContactMessages`, ... |
-| `actions/settings.ts` | `getSiteSettings`, `updateSiteSettings` |
-| `actions/account.ts` | `changeAdminPassword` |
+| Alan | Değer |
+|------|-------|
+| URL | `/admin/login` |
+| E-posta | `admin@sanayi.local` |
+| Şifre | `admin123` |
 
-Mutation action'lar `requireAdmin()` ile korunur.
+> Production ortamında seed şifresini mutlaka değiştirin.
 
-### Filtreleme / arama örneği
+---
+
+## Ortam Değişkenleri
+
+| Değişken | Zorunlu | Açıklama |
+|----------|---------|----------|
+| `DATABASE_URL` | Evet | SQLite: `file:./dev.db` — Vercel/Prod: PostgreSQL connection string |
+| `AUTH_SECRET` | Evet | NextAuth secret (32+ karakter rastgele) |
+| `NEXTAUTH_URL` | Evet | Site URL (örn. `https://alanadiniz.vercel.app`) |
+| `ADMIN_USERNAME` | Hayır | Seed script admin kullanıcı adı |
+| `ADMIN_PASSWORD` | Hayır | Seed script admin şifresi |
+| `RESEND_API_KEY` | Hayır | İletişim formu e-posta bildirimi |
+| `CONTACT_NOTIFY_EMAIL` | Hayır | Bildirim alıcı e-posta |
+| `CONTACT_NOTIFY_FROM` | Hayır | Gönderen adı/e-posta |
+
+---
+
+## Vercel'e Deploy
+
+1. [Vercel](https://vercel.com) hesabınızla GitHub reposunu bağlayın: `bariscanyonel60/sanaitokattttt`
+2. **Framework Preset:** Next.js (otomatik algılanır)
+3. **Environment Variables** ekleyin:
+   - `DATABASE_URL` → Vercel Postgres veya harici PostgreSQL URL
+   - `AUTH_SECRET` → güçlü rastgele secret
+   - `NEXTAUTH_URL` → production domain (örn. `https://xxx.vercel.app`)
+4. Deploy sonrası veritabanını oluşturun:
+   ```bash
+   npx prisma db push
+   npx prisma db seed
+   ```
+   Vercel CLI veya geçici bir migration script ile production DB'ye uygulayın.
+
+### Production veritabanı notu
+
+Yerel geliştirmede SQLite kullanılır. Vercel gibi serverless ortamlarda **PostgreSQL** (Vercel Postgres, Neon, Supabase vb.) kullanın. `prisma/schema.prisma` içindeki `provider` değerini `postgresql` yapıp `DATABASE_URL`'i güncelleyin.
+
+### Görsel yükleme
+
+Yüklenen dosyalar `public/uploads/` altına kaydedilir. Serverless ortamda kalıcı depolama için Vercel Blob, S3 veya benzeri bir çözüm eklemeniz önerilir.
+
+---
+
+## Proje Yapısı
+
+```
+app/
+  (public)/          # Ziyaretçi sayfaları
+  admin/             # Yönetim paneli
+  api/               # Upload, auth API
+actions/             # Server Actions (CRUD, filtreleme)
+components/
+  public/            # Ana sayfa, filtre, kartlar
+  admin/             # Admin formları ve listeler
+lib/                 # DB, validasyon, site ayarları
+prisma/              # Şema, seed, import scriptleri
+public/uploads/      # Yüklenen görseller
+```
+
+---
+
+## Komutlar
+
+| Komut | Açıklama |
+|-------|----------|
+| `npm run dev` | Geliştirme sunucusu |
+| `npm run build` | Production build |
+| `npm run start` | Production sunucu |
+| `npm run lint` | ESLint |
+| `npm run db:push` | Şemayı veritabanına uygula |
+| `npm run db:seed` | Örnek veri + admin |
+| `npm run db:import-shops` | Tokat dükkan import scripti |
+| `npm run db:studio` | Prisma Studio |
+
+---
+
+## API / Server Actions
+
+Tüm veritabanı işlemleri `actions/` klasöründedir. Mutation işlemleri `requireAdmin()` ile korunur.
+
+Örnek filtreleme:
 
 ```ts
 const result = await getShops({
@@ -42,40 +165,11 @@ const result = await getShops({
 });
 ```
 
-URL slug'ları `lib/utils.ts` içindeki `slugify()` ile otomatik üretilir.
+Görsel yükleme (admin oturumu gerekir): `POST /api/upload/[folder]`  
+Klasörler: `news`, `shops`, `promo`
 
-## Admin Paneli
+---
 
-- URL: `/admin`
-- Giriş: `/admin/login`
-- Varsayılan admin (seed): `admin@sanayi.local` / `admin123`
+## Lisans
 
-### Admin sayfaları
-
-| Route | Açıklama |
-|---|---|
-| `/admin` | Dashboard — istatistik kartları |
-| `/admin/shops` | Dükkan listesi (arama + sayfalama) |
-| `/admin/shops/new` | Yeni dükkan (fotoğraf galerisi, WhatsApp, saatler, harita) |
-| `/admin/shops/[id]/edit` | Dükkan düzenleme |
-| `/admin/promo-slides` | Reklam slider yönetimi (görsel + gradient) |
-| `/admin/news` | Haber / duyuru yönetimi (kapak görseli) |
-| `/admin/messages` | İletişim mesajları (arama, toplu okundu) |
-| `/admin/settings` | Site ayarları + şifre değiştirme |
-| `/admin/categories` | Kategori CRUD |
-| `/admin/vehicle-types` | Araç tipi CRUD |
-| `/admin/brands` | Marka CRUD |
-
-## Public Arayüz
-
-- Ana sayfa: filtre + firma arama + sayfalama (`/?q=...&page=2#rehber`)
-- Dükkan detay: `/dukkan/[slug]`
-- Haberler: `/haberler`, `/haberler/[slug]`
-- İletişim formu: honeypot + rate limit; opsiyonel Resend bildirimi
-
-Ana sayfa slider içeriği admin panelinden (`/admin/promo-slides`) yönetilir.
-
-## Görsel Yükleme
-
-Admin oturumu gerekir. Endpoint: `/api/upload/[folder]`  
-Klasörler: `news`, `shops`, `promo` → `public/uploads/...`
+Bu proje özel kullanım içindir. Tokat Sanayi Sitesi yönetimi ve yetkili geliştiriciler dışında izinsiz dağıtım önerilmez.
