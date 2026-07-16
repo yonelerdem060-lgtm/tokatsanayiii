@@ -39,6 +39,7 @@ export const shopSchema = z.object({
   brandIds: z.array(z.string()).default([]),
   isFeatured: z.coerce.boolean().default(false),
   featuredSortOrder: z.coerce.number().int().min(0).default(0),
+  isShopOfWeek: z.coerce.boolean().default(false),
 });
 
 export type ShopInput = z.infer<typeof shopSchema>;

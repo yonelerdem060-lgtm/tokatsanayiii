@@ -19,10 +19,17 @@ interface NewsItem {
   createdAt: Date;
 }
 
-export function NewsList({ items }: { items: NewsItem[] }) {
+export function NewsList({
+  items,
+  editHrefPrefix = "/admin/news",
+}: {
+  items: NewsItem[];
+  /** Düzenle linki öneki — örn. /admin/news veya /baskan/haberler */
+  editHrefPrefix?: string;
+}) {
   return (
-    <div className="overflow-hidden rounded-xl border border-border">
-      <table className="w-full text-sm">
+    <div className="overflow-x-auto rounded-xl border border-border">
+      <table className="w-full min-w-[640px] text-sm">
         <thead className="bg-muted/50">
           <tr>
             <th className="px-4 py-3 text-left font-medium">Haber</th>
@@ -82,7 +89,7 @@ export function NewsList({ items }: { items: NewsItem[] }) {
                         </Button>
                       </Link>
                     )}
-                    <Link href={`/admin/news/${item.id}/edit`}>
+                    <Link href={`${editHrefPrefix}/${item.id}${editHrefPrefix.startsWith("/baskan") ? "/duzenle" : "/edit"}`}>
                       <Button variant="outline" size="sm">
                         <Pencil className="h-4 w-4" />
                         Düzenle

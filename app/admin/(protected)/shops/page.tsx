@@ -109,9 +109,16 @@ export default async function AdminShopsPage({ searchParams }: AdminShopsPagePro
                       {shop.isFeatured && (
                         <Badge className="bg-amber-100 text-amber-800">Öne Çıkan</Badge>
                       )}
+                      {shop.isShopOfWeek && (
+                        <Badge className="bg-amber-500 text-white">Haftanın</Badge>
+                      )}
                     </div>
                     <p className="mt-1 text-sm text-muted-foreground">{shop.address}</p>
                     <p className="text-sm text-muted-foreground">{shop.phone}</p>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      {shop.viewCount} görüntülenme · {shop.phoneClickCount} ara ·{" "}
+                      {shop.whatsappClickCount} WhatsApp
+                    </p>
                   </div>
                 </div>
                 <div className="flex gap-2">

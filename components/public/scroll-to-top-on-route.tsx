@@ -1,16 +1,18 @@
 "use client";
 
-import { usePathname, useSearchParams } from "next/navigation";
-import { useLayoutEffect } from "react";
+import { usePathname } from "next/navigation";
+import { useLayoutEffect, useRef } from "react";
 
 export function ScrollToTopOnRoute() {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
+  const previousPathname = useRef(pathname);
 
   useLayoutEffect(() => {
-    // `#rehber` gibi hash’ler bazı navigasyonlarda tarayıcıyı orta kısma kaydırıyor.
-    // Kullanıcı her tıklamada en üstten başlasın diye hash’i kaldırıp birkaç kez
-    // scroll'u sıfırlıyoruz.
+    // Yalnızca sayfa değişiminde üste çık.
+    // ?category= gibi filtre değişimlerinde scroll konumunu bozma.
+    if (previousPathname.current === pathname) return;
+    previousPathname.current = pathname;
+
     const attempts = 6;
     let i = 0;
 
@@ -26,7 +28,7 @@ export function ScrollToTopOnRoute() {
     };
 
     run();
-  }, [pathname, searchParams]);
+  }, [pathname]);
 
   return null;
 }

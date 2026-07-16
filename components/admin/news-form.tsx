@@ -20,9 +20,11 @@ export interface NewsFormValues {
 
 interface NewsFormProps {
   initialValues?: NewsFormValues;
+  /** Kayıt sonrası yönlendirme (varsayılan: /admin/news) */
+  successHref?: string;
 }
 
-export function NewsForm({ initialValues }: NewsFormProps) {
+export function NewsForm({ initialValues, successHref = "/admin/news" }: NewsFormProps) {
   const router = useRouter();
   const isEditing = !!initialValues?.id;
 
@@ -52,7 +54,7 @@ export function NewsForm({ initialValues }: NewsFormProps) {
       return;
     }
 
-    router.push("/admin/news");
+    router.push(successHref);
     router.refresh();
   }
 

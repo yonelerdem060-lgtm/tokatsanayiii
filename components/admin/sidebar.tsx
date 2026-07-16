@@ -33,15 +33,26 @@ const navItems = [
 
 interface AdminSidebarProps {
   unreadMessages?: number;
+  className?: string;
+  onNavigate?: () => void;
 }
 
-export function AdminSidebar({ unreadMessages = 0 }: AdminSidebarProps) {
+export function AdminSidebar({
+  unreadMessages = 0,
+  className,
+  onNavigate,
+}: AdminSidebarProps) {
   const pathname = usePathname();
 
   return (
-    <aside className="flex h-full w-64 flex-col border-r border-border bg-card">
-      <div className="border-b border-border p-6">
-        <Link href="/admin" className="block">
+    <aside
+      className={cn(
+        "flex h-full w-64 flex-col border-r border-border bg-card",
+        className,
+      )}
+    >
+      <div className="border-b border-border p-5 pr-12 md:p-6 md:pr-6">
+        <Link href="/admin" className="block" onClick={onNavigate}>
           <p className="text-xs font-semibold uppercase tracking-wider text-primary">
             Tokat Sanayi
           </p>
@@ -49,7 +60,7 @@ export function AdminSidebar({ unreadMessages = 0 }: AdminSidebarProps) {
         </Link>
       </div>
 
-      <nav className="flex-1 space-y-1 p-4">
+      <nav className="flex-1 space-y-1 overflow-y-auto p-4">
         {navItems.map(({ href, label, icon: Icon, exact, badgeKey }) => {
           const isActive = exact ? pathname === href : pathname.startsWith(href);
           const badge =
@@ -58,6 +69,7 @@ export function AdminSidebar({ unreadMessages = 0 }: AdminSidebarProps) {
             <Link
               key={href}
               href={href}
+              onClick={onNavigate}
               className={cn(
                 "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
                 isActive
@@ -65,7 +77,7 @@ export function AdminSidebar({ unreadMessages = 0 }: AdminSidebarProps) {
                   : "text-muted-foreground hover:bg-muted hover:text-foreground",
               )}
             >
-              <Icon className="h-4 w-4" />
+              <Icon className="h-4 w-4 shrink-0" />
               <span className="flex-1">{label}</span>
               {badge ? (
                 <span
@@ -85,6 +97,7 @@ export function AdminSidebar({ unreadMessages = 0 }: AdminSidebarProps) {
       <div className="border-t border-border p-4">
         <Link
           href="/admin/settings"
+          onClick={onNavigate}
           className="mb-2 flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground"
         >
           <KeyRound className="h-4 w-4" />
@@ -92,6 +105,7 @@ export function AdminSidebar({ unreadMessages = 0 }: AdminSidebarProps) {
         </Link>
         <Link
           href="/"
+          onClick={onNavigate}
           className="mb-2 block rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground"
         >
           ← Siteye Dön

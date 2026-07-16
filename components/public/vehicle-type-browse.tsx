@@ -49,7 +49,7 @@ function buildFilterHref(
   }
   params.delete("page");
   const query = params.toString();
-  return query ? `/?${query}#rehber` : "/#rehber";
+  return query ? `/?${query}` : "/";
 }
 
 export function VehicleTypeBrowse({ vehicleTypes }: VehicleTypeBrowseProps) {

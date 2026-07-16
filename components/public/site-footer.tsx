@@ -7,7 +7,7 @@ const footerLinks = [
   { href: "/hakkimizda", label: "Hakkımızda" },
   { href: "/haberler", label: "Haberler" },
   { href: "/iletisim", label: "İletişim" },
-  { href: "/#rehber", label: "Firma Ara" },
+  { href: "/", label: "Firma Ara" },
 ];
 
 export function SiteFooter({ config }: { config: ResolvedSiteConfig }) {
@@ -23,7 +23,7 @@ export function SiteFooter({ config }: { config: ResolvedSiteConfig }) {
           <h4 className="font-semibold text-white">Site Haritası</h4>
           <ul className="mt-3 space-y-2 text-sm">
             {footerLinks.map((link) => (
-              <li key={link.href}>
+              <li key={`${link.href}-${link.label}`}>
                 <Link href={link.href} className="hover:text-white">
                   {link.label}
                 </Link>
@@ -74,7 +74,18 @@ export function SiteFooter({ config }: { config: ResolvedSiteConfig }) {
       </div>
 
       <div className="border-t border-slate-800 px-4 py-4 text-center text-xs text-slate-500">
-        © {new Date().getFullYear()} {config.name}
+        <p>© {new Date().getFullYear()} {config.name}</p>
+        <p className="mt-1.5">
+          <span className="text-slate-600">Media: </span>
+          <a
+            href="https://bariscanyonel.com"
+            target="_blank"
+            rel="noreferrer"
+            className="font-medium text-slate-300 transition hover:text-white"
+          >
+            Barış Can Yönel
+          </a>
+        </p>
       </div>
     </footer>
   );

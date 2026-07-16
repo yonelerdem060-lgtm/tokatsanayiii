@@ -19,6 +19,15 @@ export async function POST(request: Request, context: RouteContext) {
       return NextResponse.json(failure("Geçersiz yükleme klasörü."), { status: 400 });
     }
 
+    // Başkan yalnızca haber görseli yükleyebilir
+    if (session.user.role === "PRESIDENT" && folder !== "news") {
+      return NextResponse.json(failure("Bu klasöre yükleme yetkiniz yok."), { status: 403 });
+    }
+
+    if (session.user.role !== "ADMIN" && session.user.role !== "PRESIDENT") {
+      return NextResponse.json(failure("Yetkisiz erişim."), { status: 403 });
+    }
+
     const formData = await request.formData();
     const file = formData.get("file");
 

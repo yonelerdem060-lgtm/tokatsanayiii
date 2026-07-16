@@ -12,7 +12,7 @@ export function AdCtaBanner({ adEmail }: { adEmail: string }) {
             </div>
             <div className="flex-1">
               <h2 className="text-xl font-semibold tracking-tight sm:text-2xl">
-                Reklam vererek firmanızı öne çıkarın
+                Reklam vermek için tıklayın
               </h2>
               <p className="mt-2 text-sm text-slate-300">
                 Slider ve öne çıkan firmalar bölümünde görünün. Binlerce ziyaretçiye ulaşın.
@@ -23,7 +23,7 @@ export function AdCtaBanner({ adEmail }: { adEmail: string }) {
               className="inline-flex shrink-0 items-center gap-2 rounded-[14px] bg-amber-400 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:-translate-y-0.5 hover:bg-amber-300"
             >
               <Mail className="h-4 w-4" />
-              E-Posta Gönder
+              Reklam Vermek İçin Tıklayın
             </Link>
           </div>
         </div>

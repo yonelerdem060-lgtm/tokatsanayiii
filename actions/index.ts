@@ -15,7 +15,8 @@ export {
 } from "./vehicle-types";
 export { getBrands, createBrand, updateBrand, deleteBrand } from "./brands";
 export { getFilterOptions } from "./filters";
-export { getCategoryStats, getBrandStats, getFeaturedShops } from "./homepage";
+export { getCategoryStats, getBrandStats, getFeaturedShops, getShopOfTheWeek } from "./homepage";
+export { recordShopView, recordShopClick } from "./shop-stats";
 export {
   getActivePromoSlides,
   getPromoSlides,

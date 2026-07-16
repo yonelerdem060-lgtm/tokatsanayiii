@@ -213,6 +213,50 @@ async function main() {
 
   const promoSlides = [
     {
+      id: "seed-promo-hero-1",
+      badge: "Duyuru",
+      title: "Üretimin Gücü, Tokat’ın Geleceği",
+      subtitle: "Tokat Sanayi Sitesi",
+      description:
+        "Güçlü altyapı, geniş hizmet ağı ve köklü geçmişiyle üretimin ve istihdamın buluşma noktası.",
+      ctaText: "Firma Rehberi",
+      ctaHref: "/#rehber",
+      image: "/slides/tokat-sanayi-hero-1.png",
+      gradient: "from-slate-900 via-slate-800 to-zinc-900",
+      accent: "text-amber-200",
+      sortOrder: 0,
+      isActive: true,
+    },
+    {
+      id: "seed-promo-hero-2",
+      badge: "Duyuru",
+      title: "Tokat Sanayi Sitesi",
+      subtitle: "Birlikte üretiyor, geleceği inşa ediyoruz",
+      description:
+        "Modern altyapı, güçlü sanayici ve stratejik konum ile sürekli gelişen sanayi sitesi.",
+      ctaText: "Keşfet",
+      ctaHref: "/hakkimizda",
+      image: "/slides/tokat-sanayi-hero-2.png",
+      gradient: "from-slate-900 via-amber-900 to-slate-900",
+      accent: "text-amber-200",
+      sortOrder: 1,
+      isActive: true,
+    },
+    {
+      id: "seed-promo-hero-3",
+      badge: "Duyuru",
+      title: "Tokat Sanayi Sitesi",
+      subtitle: "Üreten Tokat, güçlü gelecek",
+      description: "Modern atölyeler, temiz altyapı ve güçlü sanayi ekosistemi.",
+      ctaText: "Firma Rehberi",
+      ctaHref: "/#rehber",
+      image: "/slides/tokat-sanayi-hero-3.jpg",
+      gradient: "from-amber-900 via-slate-800 to-slate-900",
+      accent: "text-amber-200",
+      sortOrder: 2,
+      isActive: true,
+    },
+    {
       id: "seed-promo-1",
       badge: "Reklam",
       title: "Yılmaz Motor — %20 İndirim",
@@ -221,9 +265,10 @@ async function main() {
         "Volkswagen ve Ford araçlarınız için bu ay özel fiyatlar. Sanayi Sitesi A Blok No:12",
       ctaText: "Dükkanı Gör",
       ctaHref: "/?category=motor-ustasi&vehicleType=otomobil",
+      image: null as string | null,
       gradient: "from-blue-700 via-blue-600 to-indigo-700",
       accent: "text-blue-200",
-      sortOrder: 0,
+      sortOrder: 3,
       isActive: true,
     },
     {
@@ -235,9 +280,10 @@ async function main() {
         "John Deere ve New Holland traktör parçalarında kampanya. Hemen arayın, aynı gün teslim.",
       ctaText: "Hemen Ara",
       ctaHref: "tel:03569876543",
+      image: null as string | null,
       gradient: "from-emerald-700 via-teal-600 to-cyan-700",
       accent: "text-emerald-200",
-      sortOrder: 1,
+      sortOrder: 4,
       isActive: true,
     },
     {
@@ -248,10 +294,11 @@ async function main() {
       description:
         "Otomobil, kamyonet, tır, traktör ve daha fazlası — aradığınız ustayı saniyeler içinde bulun.",
       ctaText: "Filtrele",
-      ctaHref: "/?vehicleType=otomobil#rehber",
+      ctaHref: "/?vehicleType=otomobil",
+      image: null as string | null,
       gradient: "from-slate-800 via-slate-700 to-zinc-800",
       accent: "text-slate-300",
-      sortOrder: 2,
+      sortOrder: 5,
       isActive: true,
     },
   ];
@@ -320,11 +367,31 @@ async function main() {
     },
   });
 
+  const presidentUsername = process.env.PRESIDENT_USERNAME ?? "baskan";
+  const presidentPassword = process.env.PRESIDENT_PASSWORD ?? "baskan123";
+  const presidentHashed = await bcrypt.hash(presidentPassword, 12);
+
+  await prisma.user.upsert({
+    where: { email: presidentUsername },
+    update: {
+      name: "Sanayi Başkanı",
+      password: presidentHashed,
+      role: "PRESIDENT",
+    },
+    create: {
+      email: presidentUsername,
+      name: "Sanayi Başkanı",
+      password: presidentHashed,
+      role: "PRESIDENT",
+    },
+  });
+
   console.log("Seed tamamlandı.");
   console.log(`Kategoriler: ${CATALOG_CATEGORIES.length}`);
   console.log(`Araç tipleri: ${CATALOG_VEHICLE_TYPES.length}`);
   console.log(`Markalar: ${CATALOG_ALL_BRANDS.length}`);
   console.log(`Admin: ${adminUsername} / ${adminPassword}`);
+  console.log(`Başkan: ${presidentUsername} / ${presidentPassword}`);
 }
 
 main()

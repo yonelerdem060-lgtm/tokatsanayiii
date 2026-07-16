@@ -4,17 +4,21 @@ import { ScrollToTopOnRoute } from "@/components/public/scroll-to-top-on-route";
 import { SiteFooter } from "@/components/public/site-footer";
 import { SiteHeader } from "@/components/public/site-header";
 import { getResolvedSiteConfig } from "@/lib/site-settings";
+import { getTokatWeather } from "@/lib/weather";
 
 export default async function PublicLayout({ children }: { children: React.ReactNode }) {
-  const config = await getResolvedSiteConfig();
+  const [config, weather] = await Promise.all([
+    getResolvedSiteConfig(),
+    getTokatWeather(),
+  ]);
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <Suspense fallback={null}>
         <ScrollToTopOnRoute />
       </Suspense>
-      <SiteHeader config={config} />
-      <main className="flex-1 pb-24 md:pb-0">{children}</main>
+      <SiteHeader config={config} weather={weather} />
+      <main className="flex-1 pb-28 md:pb-0">{children}</main>
       <SiteFooter config={config} />
       <MobileDock />
     </div>

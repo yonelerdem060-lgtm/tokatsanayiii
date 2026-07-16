@@ -1,13 +1,22 @@
 "use client";
 
-import { loginAction } from "@/actions/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { getSession, signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 
-export function LoginForm() {
+interface LoginFormProps {
+  /** Giriş sonrası yedek yönlendirme; rol biliniyorsa onu kullanır */
+  defaultRedirect?: string;
+  usernamePlaceholder?: string;
+}
+
+export function LoginForm({
+  defaultRedirect = "/admin",
+  usernamePlaceholder = "admin",
+}: LoginFormProps) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -21,16 +30,24 @@ export function LoginForm() {
     const username = String(formData.get("username") ?? "").trim();
     const password = String(formData.get("password") ?? "");
 
-    const result = await loginAction(username, password);
+    const result = await signIn("credentials", {
+      username,
+      password,
+      redirect: false,
+    });
 
-    setLoading(false);
-
-    if (!result.success) {
-      setError(result.error);
+    if (result?.error) {
+      setLoading(false);
+      setError("Kullanıcı adı veya şifre hatalı.");
       return;
     }
 
-    router.push("/admin");
+    const session = await getSession();
+    const role = session?.user?.role;
+    const redirectTo =
+      role === "PRESIDENT" ? "/baskan" : role === "ADMIN" ? "/admin" : defaultRedirect;
+
+    router.push(redirectTo);
     router.refresh();
   }
 
@@ -43,7 +60,7 @@ export function LoginForm() {
           name="username"
           type="text"
           required
-          placeholder="admin"
+          placeholder={usernamePlaceholder}
           autoComplete="username"
         />
       </div>
@@ -54,7 +71,7 @@ export function LoginForm() {
           name="password"
           type="password"
           required
-          placeholder="admin123"
+          placeholder="••••••••"
           autoComplete="current-password"
         />
       </div>

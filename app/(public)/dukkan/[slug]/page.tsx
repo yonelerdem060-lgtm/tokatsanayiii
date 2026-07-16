@@ -1,14 +1,16 @@
 import { getShopBySlug } from "@/actions/shops";
+import { FavoriteButton } from "@/components/public/favorite-button";
+import { ShopContactActions } from "@/components/public/shop-contact-actions";
+import { ShopViewTracker } from "@/components/public/shop-view-tracker";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
   ArrowLeft,
   Clock3,
   ExternalLink,
   ImageIcon,
   MapPin,
-  Phone,
   Store,
+  Trophy,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -46,19 +48,31 @@ export default async function ShopDetailPage({ params }: ShopDetailPageProps) {
   if (!result.success) notFound();
 
   const shop = result.data;
-  const phoneHref = `tel:${shop.phone.replace(/\s/g, "")}`;
   const whatsappHref = shop.whatsapp ? toWhatsAppLink(shop.whatsapp) : null;
   const gallery = shop.gallery.length > 0 ? shop.gallery : shop.image ? [shop.image] : [];
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6 sm:py-10 lg:px-8">
-      <Link
-        href="/#rehber"
-        className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary"
-      >
-        <ArrowLeft className="h-4 w-4" />
-        Rehbere Dön
-      </Link>
+      <ShopViewTracker shopId={shop.id} />
+
+      <div className="flex items-center justify-between gap-3">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Rehbere Dön
+        </Link>
+        <FavoriteButton
+          shop={{
+            id: shop.id,
+            name: shop.name,
+            slug: shop.slug,
+            image: shop.image,
+            phone: shop.phone,
+          }}
+        />
+      </div>
 
       <div className="mt-4 overflow-hidden rounded-2xl border border-border bg-card sm:mt-6">
         <div className="relative aspect-[16/10] w-full bg-muted sm:aspect-[21/9]">
@@ -84,7 +98,15 @@ export default async function ShopDetailPage({ params }: ShopDetailPageProps) {
           <div className="grid grid-cols-2 gap-2 border-b border-border p-3 sm:grid-cols-4">
             {gallery.slice(1).map((url) => (
               <div key={url} className="relative aspect-[4/3] overflow-hidden rounded-lg bg-muted">
-                <Image src={url} alt="" fill unoptimized className="object-cover" sizes="200px" />
+                <Image
+                  src={url}
+                  alt=""
+                  fill
+                  unoptimized
+                  loading="lazy"
+                  className="object-cover"
+                  sizes="200px"
+                />
               </div>
             ))}
           </div>
@@ -99,6 +121,12 @@ export default async function ShopDetailPage({ params }: ShopDetailPageProps) {
                 {shop.isFeatured && (
                   <Badge className="bg-amber-100 text-amber-800">Öne Çıkan</Badge>
                 )}
+                {shop.isShopOfWeek && (
+                  <Badge className="bg-amber-500 text-white">
+                    <Trophy className="mr-1 h-3 w-3" />
+                    Haftanın Firması
+                  </Badge>
+                )}
               </div>
               <h1 className="mt-2 text-2xl font-bold tracking-tight sm:text-3xl">{shop.name}</h1>
               {shop.description && (
@@ -107,21 +135,14 @@ export default async function ShopDetailPage({ params }: ShopDetailPageProps) {
                 </p>
               )}
             </div>
-            <div className="hidden w-full flex-col gap-2 sm:flex sm:w-auto">
-              <a href={phoneHref}>
-                <Button size="lg" className="w-full sm:w-auto">
-                  <Phone className="h-4 w-4" />
-                  Ara: {shop.phone}
-                </Button>
-              </a>
-              {whatsappHref && (
-                <a href={whatsappHref} target="_blank" rel="noreferrer">
-                  <Button size="lg" variant="outline" className="w-full sm:w-auto">
-                    WhatsApp
-                  </Button>
-                </a>
-              )}
-            </div>
+            <ShopContactActions
+              shopId={shop.id}
+              phone={shop.phone}
+              whatsappHref={whatsappHref}
+              layout="stack"
+              showPhoneNumber
+              className="hidden sm:flex sm:w-auto"
+            />
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
@@ -181,22 +202,14 @@ export default async function ShopDetailPage({ params }: ShopDetailPageProps) {
         </div>
       </div>
 
-      <div className="fixed inset-x-0 bottom-[calc(4.25rem+env(safe-area-inset-bottom))] z-30 border-t border-border/80 bg-white/95 p-3 shadow-[0_-8px_30px_-18px_rgba(15,23,42,0.35)] backdrop-blur-xl sm:hidden">
-        <div className="mx-auto flex max-w-5xl gap-2">
-          <a href={phoneHref} className="flex-1">
-            <Button size="lg" className="h-12 w-full rounded-[14px]">
-              <Phone className="h-4 w-4" />
-              Ara
-            </Button>
-          </a>
-          {whatsappHref ? (
-            <a href={whatsappHref} target="_blank" rel="noreferrer" className="flex-1">
-              <Button size="lg" variant="outline" className="h-12 w-full rounded-[14px] border-emerald-200 bg-emerald-50 text-emerald-800">
-                WhatsApp
-              </Button>
-            </a>
-          ) : null}
-        </div>
+      <div className="fixed inset-x-0 bottom-[calc(5.5rem+env(safe-area-inset-bottom))] z-30 border-t border-border/80 bg-white/95 p-3 shadow-[0_-8px_30px_-18px_rgba(15,23,42,0.35)] backdrop-blur-xl sm:hidden">
+        <ShopContactActions
+          shopId={shop.id}
+          phone={shop.phone}
+          whatsappHref={whatsappHref}
+          layout="row"
+          className="mx-auto max-w-5xl"
+        />
       </div>
     </div>
   );

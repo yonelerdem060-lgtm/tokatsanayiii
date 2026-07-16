@@ -7,19 +7,8 @@ export const authConfig = {
     signIn: "/admin/login",
   },
   callbacks: {
-    authorized({ auth, request: { nextUrl } }) {
-      const isAdminRoute = nextUrl.pathname.startsWith("/admin");
-      const isLoginPage = nextUrl.pathname === "/admin/login";
-      const isLoggedIn = !!auth?.user;
-
-      if (isLoginPage && isLoggedIn) {
-        return Response.redirect(new URL("/admin", nextUrl));
-      }
-
-      if (isAdminRoute && !isLoginPage && !isLoggedIn) {
-        return false;
-      }
-
+    authorized() {
+      // Route koruması middleware.ts içinde rol bazlı yönetilir.
       return true;
     },
     jwt({ token, user }) {

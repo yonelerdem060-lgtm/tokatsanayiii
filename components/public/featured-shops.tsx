@@ -28,7 +28,7 @@ export function FeaturedShops({ shops }: FeaturedShopsProps) {
           <div>
             <div className="mb-2 inline-flex items-center gap-2 rounded-full bg-amber-50 px-2.5 py-1 text-xs font-semibold text-amber-700">
               <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
-              Featured Companies
+              Öne Çıkan
             </div>
             <h2 className="text-2xl font-semibold tracking-tight">Öne çıkan firmalar</h2>
             <p className="mt-1 text-sm text-muted-foreground">
@@ -37,7 +37,7 @@ export function FeaturedShops({ shops }: FeaturedShopsProps) {
           </div>
           <Link
             href="/#rehber"
-            className="hidden items-center gap-1 text-sm font-medium text-blue-700 transition hover:text-blue-800 sm:inline-flex"
+            className="hidden items-center gap-1 text-sm font-medium text-primary transition hover:brightness-90 sm:inline-flex"
           >
             Tümünü gör
             <ArrowRight className="h-4 w-4" />
@@ -55,11 +55,12 @@ export function FeaturedShops({ shops }: FeaturedShopsProps) {
                       alt={shop.name}
                       fill
                       unoptimized
+                      loading="lazy"
                       className="object-cover transition duration-500 group-hover:scale-[1.03]"
                       sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                     />
                   ) : (
-                    <div className="flex h-full items-center justify-center bg-gradient-to-br from-blue-50 to-slate-100 text-slate-400">
+                    <div className="flex h-full items-center justify-center bg-gradient-to-br from-primary-soft to-slate-100 text-slate-400">
                       <ImageIcon className="h-8 w-8 opacity-50" />
                     </div>
                   )}
@@ -77,18 +78,19 @@ export function FeaturedShops({ shops }: FeaturedShopsProps) {
 
                 <div className="flex flex-1 flex-col gap-4 p-5">
                   <div className="flex items-start gap-3">
-                    <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-[14px] border border-border bg-muted">
+                    <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-[var(--ds-radius-lg)] border border-border bg-muted">
                       {shop.image ? (
                         <Image
                           src={shop.image}
                           alt=""
                           fill
                           unoptimized
+                          loading="lazy"
                           className="object-cover"
                           sizes="48px"
                         />
                       ) : (
-                        <div className="flex h-full items-center justify-center text-xs font-bold text-blue-700">
+                        <div className="flex h-full items-center justify-center text-xs font-bold text-primary">
                           {shop.name.slice(0, 2).toUpperCase()}
                         </div>
                       )}
@@ -107,11 +109,11 @@ export function FeaturedShops({ shops }: FeaturedShopsProps) {
 
                   <div className="space-y-2 text-sm text-muted-foreground">
                     <p className="flex items-start gap-2">
-                      <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-blue-600" />
+                      <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
                       <span className="line-clamp-2">{shop.address}</span>
                     </p>
                     <p className="flex items-center gap-2">
-                      <Phone className="h-4 w-4 shrink-0 text-blue-600" />
+                      <Phone className="h-4 w-4 shrink-0 text-primary" />
                       {shop.phone}
                     </p>
                   </div>
@@ -126,14 +128,14 @@ export function FeaturedShops({ shops }: FeaturedShopsProps) {
 
                   <div className="mt-auto flex gap-2 pt-1">
                     <Link href={`/dukkan/${shop.slug}`} className="flex-1">
-                      <Button className="w-full rounded-[14px] transition hover:-translate-y-0.5">
+                      <Button variant="primary" className="w-full transition hover:-translate-y-0.5">
                         Detayı Gör
                       </Button>
                     </Link>
                     <a href={`tel:${shop.phone.replace(/\s/g, "")}`}>
                       <Button
-                        variant="outline"
-                        className="rounded-[14px] transition hover:-translate-y-0.5"
+                        variant="secondary"
+                        className="transition hover:-translate-y-0.5"
                         aria-label={`${shop.name} ara`}
                       >
                         <Phone className="h-4 w-4" />

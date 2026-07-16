@@ -59,6 +59,7 @@ export default async function EditShopPage({ params }: EditShopPageProps) {
               brandIds: shop.brands.map((item) => item.id),
               isFeatured: shop.isFeatured,
               featuredSortOrder: shop.featuredSortOrder,
+              isShopOfWeek: shop.isShopOfWeek,
             }}
             categories={categories}
             vehicleTypes={vehicleTypes}

@@ -19,6 +19,7 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
   useTransition,
 } from "react";
@@ -35,15 +36,22 @@ interface FilterBarProps {
   vehicleTypes: FilterOptionWithCount[];
   brands: FilterOptionWithCount[];
   resultCount: number;
+  /** Firma / kategori / marka adlarından autocomplete önerileri */
+  suggestions?: string[];
+  onPendingChange?: (pending: boolean) => void;
 }
 
 type FilterKey = "category" | "vehicleType" | "brand";
+
+const POPULAR_SEARCHES = ["lastik", "motor", "klima", "egzoz", "fren", "yağ"];
 
 export function FilterBar({
   categories,
   vehicleTypes,
   brands,
   resultCount,
+  suggestions = [],
+  onPendingChange,
 }: FilterBarProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -53,6 +61,8 @@ export function FilterBar({
   const [sheetTab, setSheetTab] = useState<FilterKey>("category");
   const [firmQuery, setFirmQuery] = useState(searchParams.get("q") ?? "");
   const [optionQuery, setOptionQuery] = useState("");
+  const [suggestOpen, setSuggestOpen] = useState(false);
+  const searchWrapRef = useRef<HTMLDivElement>(null);
 
   const selectedCategory = searchParams.get("category") ?? "";
   const selectedVehicleType = searchParams.get("vehicleType") ?? "";
@@ -64,6 +74,10 @@ export function FilterBar({
   }, [selectedQuery]);
 
   useEffect(() => {
+    onPendingChange?.(isPending);
+  }, [isPending, onPendingChange]);
+
+  useEffect(() => {
     if (!sheetOpen) return;
     const previous = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -71,6 +85,16 @@ export function FilterBar({
       document.body.style.overflow = previous;
     };
   }, [sheetOpen]);
+
+  useEffect(() => {
+    function onPointerDown(event: MouseEvent) {
+      if (!searchWrapRef.current?.contains(event.target as Node)) {
+        setSuggestOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", onPointerDown);
+    return () => document.removeEventListener("mousedown", onPointerDown);
+  }, []);
 
   const updateParams = useCallback(
     (updates: Record<string, string | null>) => {
@@ -82,9 +106,7 @@ export function FilterBar({
       params.delete("page");
       startTransition(() => {
         const query = params.toString();
-        router.push(query ? `${pathname}?${query}#rehber` : `${pathname}#rehber`, {
-          scroll: false,
-        });
+        router.push(query ? `${pathname}?${query}` : `${pathname}`);
       });
     },
     [pathname, router, searchParams],
@@ -95,18 +117,44 @@ export function FilterBar({
     updateParams({ [key]: current === slug ? null : slug });
   }
 
+  function applySearch(value: string) {
+    const trimmed = value.trim();
+    setFirmQuery(trimmed);
+    setSuggestOpen(false);
+    updateParams({ q: trimmed || null });
+  }
+
   function handleSearch(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    updateParams({ q: firmQuery.trim() || null });
+    applySearch(firmQuery);
   }
 
   function clearAll() {
     startTransition(() => {
-      router.push(`${pathname}#rehber`, { scroll: false });
+      router.push(`${pathname}`);
     });
     setFirmQuery("");
     setOptionQuery("");
+    setSuggestOpen(false);
   }
+
+  const catalogSuggestions = useMemo(() => {
+    const fromFilters = [
+      ...categories.map((item) => item.name),
+      ...brands.map((item) => item.name),
+      ...vehicleTypes.map((item) => item.name),
+    ];
+    return Array.from(new Set([...suggestions, ...fromFilters]));
+  }, [suggestions, categories, brands, vehicleTypes]);
+
+  const filteredSuggestions = useMemo(() => {
+    const query = firmQuery.trim().toLocaleLowerCase("tr");
+    if (query.length < 1) return [];
+    return catalogSuggestions
+      .filter((item) => item.toLocaleLowerCase("tr").includes(query))
+      .filter((item) => item.toLocaleLowerCase("tr") !== query)
+      .slice(0, 8);
+  }, [firmQuery, catalogSuggestions]);
 
   const selectedCategoryName = categories.find((item) => item.slug === selectedCategory)?.name;
   const selectedVehicleName = vehicleTypes.find((item) => item.slug === selectedVehicleType)?.name;
@@ -167,29 +215,58 @@ export function FilterBar({
       <div
         id="rehber-filters"
         className={cn(
-          "sticky top-[72px] z-30 -mx-4 scroll-mt-32 space-y-3 bg-gradient-to-b from-[#f4f7fb] via-[#f4f7fb]/95 to-transparent px-4 pb-3 pt-1 sm:top-[104px] sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8",
-          isPending && "opacity-70",
+          "sticky top-[72px] z-30 -mx-4 scroll-mt-32 space-y-3 bg-gradient-to-b from-background via-background/95 to-transparent px-4 pb-3 pt-1 sm:top-[104px] sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8",
+          isPending && "pointer-events-none opacity-60",
         )}
       >
-        <div className="rounded-[18px] border border-border/80 bg-white/95 p-2.5 shadow-[0_8px_30px_-18px_rgba(15,23,42,0.3)] backdrop-blur-xl sm:p-3">
+        <div className="rounded-[var(--ds-radius-xl)] border border-border/80 bg-white/95 p-2.5 shadow-[var(--ds-shadow-soft)] backdrop-blur-xl sm:p-3">
           <div className="flex gap-2">
-            <form onSubmit={handleSearch} className="relative min-w-0 flex-1">
-              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-              <Input
-                value={firmQuery}
-                onChange={(event) => setFirmQuery(event.target.value)}
-                placeholder="Firma, telefon veya adres..."
-                enterKeyHint="search"
-                className="h-12 rounded-[14px] border-slate-200 bg-slate-50/90 pl-10 pr-16 text-base sm:text-sm"
-              />
-              <Button
-                type="submit"
-                size="sm"
-                className="absolute right-1.5 top-1/2 h-9 -translate-y-1/2 rounded-[12px] px-3"
-              >
-                Ara
-              </Button>
-            </form>
+            <div ref={searchWrapRef} className="relative min-w-0 flex-1">
+              <form onSubmit={handleSearch} className="relative">
+                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                <Input
+                  value={firmQuery}
+                  onChange={(event) => {
+                    setFirmQuery(event.target.value);
+                    setSuggestOpen(true);
+                  }}
+                  onFocus={() => setSuggestOpen(true)}
+                  placeholder="Firma, telefon veya adres..."
+                  enterKeyHint="search"
+                  autoComplete="off"
+                  className="h-12 rounded-[var(--ds-radius-lg)] border-slate-200 bg-slate-50/90 pl-10 pr-16 text-base sm:text-sm"
+                />
+                <Button
+                  type="submit"
+                  size="sm"
+                  variant="primary"
+                  className="absolute right-1.5 top-1/2 h-9 -translate-y-1/2 rounded-[var(--ds-radius-md)] px-3"
+                >
+                  Ara
+                </Button>
+              </form>
+
+              {suggestOpen && filteredSuggestions.length > 0 && (
+                <ul
+                  role="listbox"
+                  className="absolute left-0 right-0 top-[calc(100%+6px)] z-40 overflow-hidden rounded-[var(--ds-radius-lg)] border border-border bg-white shadow-[var(--ds-shadow-lift)]"
+                >
+                  {filteredSuggestions.map((item) => (
+                    <li key={item}>
+                      <button
+                        type="button"
+                        role="option"
+                        className="flex w-full items-center gap-2 px-3 py-2.5 text-left text-sm text-slate-700 transition hover:bg-primary-soft hover:text-primary"
+                        onClick={() => applySearch(item)}
+                      >
+                        <Search className="h-3.5 w-3.5 shrink-0 text-slate-400" />
+                        <span className="truncate">{item}</span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
 
             <button
               type="button"
@@ -198,20 +275,45 @@ export function FilterBar({
                 setOptionQuery("");
               }}
               className={cn(
-                "relative inline-flex h-12 shrink-0 items-center gap-2 rounded-[14px] border px-3.5 text-sm font-semibold transition md:hidden",
+                "relative inline-flex h-12 shrink-0 items-center gap-2 rounded-[var(--ds-radius-lg)] border px-3.5 text-sm font-semibold transition md:hidden",
                 activeCount > 0
-                  ? "border-blue-200 bg-blue-50 text-blue-700"
+                  ? "border-blue-200 bg-primary-soft text-primary"
                   : "border-slate-200 bg-white text-slate-700",
               )}
             >
               <Filter className="h-4 w-4" />
               Filtre
               {activeCount > 0 && (
-                <span className="absolute -right-1.5 -top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-blue-600 px-1 text-[10px] font-bold text-white">
+                <span className="absolute -right-1.5 -top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-white">
                   {activeCount}
                 </span>
               )}
             </button>
+          </div>
+
+          {/* Popüler aramalar */}
+          <div className="mt-2.5 flex flex-wrap items-center gap-2">
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+              Popüler
+            </span>
+            {POPULAR_SEARCHES.map((term) => {
+              const active = selectedQuery.toLocaleLowerCase("tr") === term;
+              return (
+                <button
+                  key={term}
+                  type="button"
+                  onClick={() => applySearch(active ? "" : term)}
+                  className={cn(
+                    "rounded-full border px-2.5 py-1 text-xs font-medium transition",
+                    active
+                      ? "border-primary bg-primary text-primary-foreground"
+                      : "border-border bg-muted/60 text-slate-600 hover:border-blue-200 hover:bg-primary-soft hover:text-primary",
+                  )}
+                >
+                  {term}
+                </button>
+              );
+            })}
           </div>
 
           {/* Desktop / tablet triggers */}
@@ -250,7 +352,7 @@ export function FilterBar({
               <button
                 type="button"
                 onClick={clearAll}
-                className="inline-flex h-11 items-center gap-2 rounded-[14px] border border-slate-200 bg-white px-3.5 text-sm font-medium text-slate-600 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
+                className="inline-flex h-11 items-center gap-2 rounded-[var(--ds-radius-lg)] border border-slate-200 bg-white px-3.5 text-sm font-medium text-slate-600 transition hover:border-blue-200 hover:bg-primary-soft hover:text-primary"
               >
                 <RotateCcw className="h-4 w-4" />
                 Temizle
@@ -263,6 +365,7 @@ export function FilterBar({
           <p className="text-sm text-muted-foreground">
             <span className="font-semibold text-slate-900">{resultCount}</span> dükkan
             {activeCount > 0 ? " · filtrelendi" : ""}
+            {isPending ? " · güncelleniyor…" : ""}
           </p>
           {activeChips.length > 0 && (
             <div className="hide-scrollbar flex max-w-full gap-2 overflow-x-auto">
@@ -271,12 +374,20 @@ export function FilterBar({
                   key={chip.key}
                   type="button"
                   onClick={chip.onClear}
-                  className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-blue-100 bg-blue-50 px-3 py-1.5 text-xs font-medium text-blue-700"
+                  className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-blue-100 bg-primary-soft px-3 py-1.5 text-xs font-medium text-primary"
                 >
                   {chip.label}
                   <X className="h-3 w-3" />
                 </button>
               ))}
+              <button
+                type="button"
+                onClick={clearAll}
+                className="inline-flex shrink-0 items-center gap-1 rounded-full border border-border bg-white px-3 py-1.5 text-xs font-medium text-slate-600 transition hover:bg-muted md:hidden"
+              >
+                <RotateCcw className="h-3 w-3" />
+                Temizle
+              </button>
             </div>
           )}
         </div>
@@ -295,7 +406,7 @@ export function FilterBar({
             role="dialog"
             aria-modal="true"
             aria-label="Filtreler"
-            className="relative z-10 flex max-h-[88vh] w-full flex-col overflow-hidden rounded-t-[24px] bg-white shadow-2xl md:max-h-[80vh] md:max-w-lg md:rounded-[24px]"
+            className="relative z-10 flex max-h-[88vh] w-full flex-col overflow-hidden rounded-t-[var(--ds-radius-xl)] bg-white shadow-2xl md:max-h-[80vh] md:max-w-lg md:rounded-[var(--ds-radius-xl)]"
           >
             <div className="flex items-center justify-between border-b border-border px-4 py-3.5">
               <div>
@@ -338,14 +449,14 @@ export function FilterBar({
                       setOptionQuery("");
                     }}
                     className={cn(
-                      "relative flex flex-1 items-center justify-center gap-1.5 rounded-[12px] px-2 py-2.5 text-xs font-semibold transition sm:text-sm",
-                      active ? "bg-white text-blue-700 shadow-sm" : "text-slate-600",
+                      "relative flex flex-1 items-center justify-center gap-1.5 rounded-[var(--ds-radius-md)] px-2 py-2.5 text-xs font-semibold transition sm:text-sm",
+                      active ? "bg-white text-primary shadow-sm" : "text-slate-600",
                     )}
                   >
                     <tab.icon className="h-3.5 w-3.5" />
                     {tab.label}
                     {selected && (
-                      <span className="h-1.5 w-1.5 rounded-full bg-blue-600" />
+                      <span className="h-1.5 w-1.5 rounded-full bg-primary" />
                     )}
                   </button>
                 );
@@ -366,7 +477,7 @@ export function FilterBar({
                         ? "Araç tipi ara..."
                         : "Marka ara..."
                   }
-                  className="h-11 rounded-[12px] border-slate-200 bg-white pl-9 text-base sm:text-sm"
+                  className="h-11 rounded-[var(--ds-radius-md)] border-slate-200 bg-white pl-9 text-base sm:text-sm"
                 />
               </div>
             </div>
@@ -386,9 +497,9 @@ export function FilterBar({
                           type="button"
                           onClick={() => selectOption(sheetTab, option.slug)}
                           className={cn(
-                            "flex min-h-12 w-full items-center gap-3 rounded-[14px] px-3 py-3 text-left transition active:scale-[0.99]",
+                            "flex min-h-12 w-full items-center gap-3 rounded-[var(--ds-radius-lg)] px-3 py-3 text-left transition active:scale-[0.99]",
                             isActive
-                              ? "bg-blue-600 text-white"
+                              ? "bg-primary text-primary-foreground"
                               : "hover:bg-slate-50 active:bg-slate-100",
                             option.count === 0 && !isActive && "opacity-45",
                           )}
@@ -415,13 +526,19 @@ export function FilterBar({
 
             <div className="flex gap-2 border-t border-border bg-white p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
               {activeCount > 0 && (
-                <Button type="button" variant="outline" className="h-12 flex-1 rounded-[14px]" onClick={clearAll}>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  className="h-12 flex-1 rounded-[var(--ds-radius-lg)]"
+                  onClick={clearAll}
+                >
                   Temizle
                 </Button>
               )}
               <Button
                 type="button"
-                className="h-12 flex-[1.4] rounded-[14px]"
+                variant="primary"
+                className="h-12 flex-[1.4] rounded-[var(--ds-radius-lg)]"
                 onClick={() => setSheetOpen(false)}
               >
                 {resultCount} sonucu göster
@@ -450,10 +567,10 @@ function DesktopTrigger({
       type="button"
       onClick={onClick}
       className={cn(
-        "inline-flex h-11 min-w-[140px] flex-1 items-center justify-between gap-2 rounded-[14px] border px-3.5 text-sm font-medium transition",
+        "inline-flex h-11 min-w-[140px] flex-1 items-center justify-between gap-2 rounded-[var(--ds-radius-lg)] border px-3.5 text-sm font-medium transition",
         active
-          ? "border-blue-200 bg-blue-50 text-blue-700"
-          : "border-slate-200 bg-white text-slate-700 hover:border-blue-200 hover:bg-blue-50/50",
+          ? "border-blue-200 bg-primary-soft text-primary"
+          : "border-slate-200 bg-white text-slate-700 hover:border-blue-200 hover:bg-primary-soft/50",
       )}
     >
       <span className="inline-flex min-w-0 items-center gap-2">

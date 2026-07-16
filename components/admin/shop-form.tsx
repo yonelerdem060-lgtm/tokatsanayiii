@@ -26,6 +26,7 @@ export interface ShopFormValues {
   brandIds: string[];
   isFeatured?: boolean;
   featuredSortOrder?: number;
+  isShopOfWeek?: boolean;
 }
 
 interface ShopFormProps {
@@ -68,6 +69,7 @@ export function ShopForm({
   const [featuredSortOrder, setFeaturedSortOrder] = useState(
     initialValues?.featuredSortOrder ?? 0,
   );
+  const [isShopOfWeek, setIsShopOfWeek] = useState(initialValues?.isShopOfWeek ?? false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -91,6 +93,7 @@ export function ShopForm({
       brandIds,
       isFeatured,
       featuredSortOrder,
+      isShopOfWeek,
     };
 
     const result = isEditing
@@ -245,6 +248,21 @@ export function ShopForm({
           />
         </div>
       </div>
+
+      <label className="flex items-center gap-3 rounded-lg border border-amber-200 bg-amber-50/50 p-4">
+        <input
+          type="checkbox"
+          checked={isShopOfWeek}
+          onChange={(event) => setIsShopOfWeek(event.target.checked)}
+          className="h-4 w-4 rounded accent-amber-600"
+        />
+        <div>
+          <p className="text-sm font-medium">Haftanın öne çıkan firması</p>
+          <p className="text-xs text-muted-foreground">
+            Ana sayfada özel bölümde gösterilir. Aynı anda yalnızca bir firma seçili olabilir.
+          </p>
+        </div>
+      </label>
 
       {error && <p className="text-sm text-red-600">{error}</p>}
 

@@ -35,7 +35,7 @@ export function HeroSearch({ categories, vehicleTypes, totalShops }: HeroSearchP
     if (category) params.set("category", category);
     if (vehicleType) params.set("vehicleType", vehicleType);
     const qs = params.toString();
-    router.push(qs ? `/?${qs}#rehber` : "/#rehber");
+    router.push(qs ? `/?${qs}` : "/");
   }
 
   return (
@@ -151,7 +151,7 @@ export function HeroSearch({ categories, vehicleTypes, totalShops }: HeroSearchP
                 setCategory(item.slug);
                 const params = new URLSearchParams();
                 params.set("category", item.slug);
-                router.push(`/?${params.toString()}#rehber`);
+                router.push(`/?${params.toString()}`);
               }}
               className="rounded-full border border-blue-100 bg-white/70 px-3 py-1.5 text-blue-700 transition active:scale-95 hover:border-blue-300 hover:bg-white"
             >

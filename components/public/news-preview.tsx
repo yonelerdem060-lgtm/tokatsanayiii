@@ -33,11 +33,11 @@ export function NewsPreview({ posts }: NewsPreviewProps) {
         <Reveal className="mb-6 flex items-end justify-between gap-4">
           <div>
             <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-blue-600">
-              Latest News
+              Bizden Haberler
             </p>
-            <h2 className="text-2xl font-semibold tracking-tight">Son haberler</h2>
+            <h2 className="text-2xl font-semibold tracking-tight">Bizden haberler</h2>
             <p className="mt-1 text-sm text-muted-foreground">
-              Sanayi sitesinden duyurular ve gelişmeler
+              Yönetimden duyurular ve gelişmeler
             </p>
           </div>
           <Link

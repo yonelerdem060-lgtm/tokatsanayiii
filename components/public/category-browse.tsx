@@ -60,7 +60,7 @@ function buildFilterHref(
   }
   params.delete("page");
   const query = params.toString();
-  return query ? `${pathname}?${query}#rehber` : `${pathname}#rehber`;
+  return query ? `${pathname}?${query}` : `${pathname}`;
 }
 
 export function CategoryBrowse({ categories }: CategoryBrowseProps) {
@@ -83,7 +83,7 @@ export function CategoryBrowse({ categories }: CategoryBrowseProps) {
             <p className="mt-1 text-sm text-muted-foreground">Dokun, filtrele, hemen ara</p>
           </div>
           <Link
-            href="/#rehber"
+            href="/"
             className="hidden items-center gap-1 text-sm font-medium text-blue-700 transition hover:text-blue-800 sm:inline-flex"
           >
             Tüm rehber

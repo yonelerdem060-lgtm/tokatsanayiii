@@ -1,6 +1,6 @@
 "use server";
 
-import { requireAdmin } from "@/lib/admin";
+import { requireNewsEditor } from "@/lib/admin";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
 import { deleteUploadedFile } from "@/lib/uploads";
@@ -82,7 +82,7 @@ async function uniqueSlug(title: string, excludeId?: string) {
 
 export async function createNewsFromInput(input: unknown) {
   try {
-    await requireAdmin();
+    await requireNewsEditor();
 
     const data = newsPostSchema.parse(input);
     const slug = await uniqueSlug(data.title);
@@ -102,6 +102,8 @@ export async function createNewsFromInput(input: unknown) {
     revalidatePath("/");
     revalidatePath("/haberler");
     revalidatePath("/admin/news");
+    revalidatePath("/baskan");
+    revalidatePath("/baskan/haberler");
 
     return success(formatNewsPost(post));
   } catch (error) {
@@ -111,7 +113,7 @@ export async function createNewsFromInput(input: unknown) {
 
 export async function updateNewsFromInput(id: string, input: unknown) {
   try {
-    await requireAdmin();
+    await requireNewsEditor();
 
     const data = newsPostSchema.parse(input);
     const existing = await prisma.newsPost.findUnique({ where: { id } });
@@ -145,6 +147,9 @@ export async function updateNewsFromInput(id: string, input: unknown) {
     revalidatePath(`/haberler/${post.slug}`);
     revalidatePath("/admin/news");
     revalidatePath(`/admin/news/${id}/edit`);
+    revalidatePath("/baskan");
+    revalidatePath("/baskan/haberler");
+    revalidatePath(`/baskan/haberler/${id}/duzenle`);
 
     return success(formatNewsPost(post));
   } catch (error) {
@@ -154,7 +159,7 @@ export async function updateNewsFromInput(id: string, input: unknown) {
 
 export async function deleteNews(id: string) {
   try {
-    await requireAdmin();
+    await requireNewsEditor();
 
     const existing = await prisma.newsPost.findUnique({ where: { id } });
     if (!existing) return failure("Haber bulunamadı.");
@@ -165,6 +170,8 @@ export async function deleteNews(id: string) {
     revalidatePath("/");
     revalidatePath("/haberler");
     revalidatePath("/admin/news");
+    revalidatePath("/baskan");
+    revalidatePath("/baskan/haberler");
     return success(undefined);
   } catch (error) {
     return failure(getErrorMessage(error));

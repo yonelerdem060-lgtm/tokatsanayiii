@@ -6,6 +6,7 @@
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
   --color-primary-soft: var(--primary-soft);
+  --color-surface: var(--surface);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
   --color-border: var(--border);
@@ -13,26 +14,59 @@
   --color-card-foreground: var(--card-foreground);
   --color-glass: var(--glass);
   --color-ring: var(--ring);
+  --color-accent: var(--accent);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-success-soft: var(--success-soft);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-  --radius-card: 1.25rem;
-  --shadow-soft: 0 4px 24px -4px rgb(15 23 42 / 0.08);
-  --shadow-lift: 0 16px 40px -12px rgb(29 78 216 / 0.22);
+  --radius-sm: var(--ds-radius-sm);
+  --radius-md: var(--ds-radius-md);
+  --radius-lg: var(--ds-radius-lg);
+  --radius-xl: var(--ds-radius-xl);
+  --radius-card: var(--ds-radius-xl);
+  --shadow-soft: var(--ds-shadow-soft);
+  --shadow-card: var(--ds-shadow-card);
+  --shadow-lift: var(--ds-shadow-lift);
+  --spacing-ds-1: 0.25rem;
+  --spacing-ds-2: 0.5rem;
+  --spacing-ds-3: 0.75rem;
+  --spacing-ds-4: 1rem;
+  --spacing-ds-6: 1.5rem;
+  --spacing-ds-8: 2rem;
+  --spacing-ds-12: 3rem;
 }
 
 :root {
+  /* Colors */
   --background: #f4f7fb;
   --foreground: #0b1220;
-  --primary: #1d4ed8;
+  --primary: #1e4b8f;
   --primary-foreground: #ffffff;
   --primary-soft: #eff4ff;
+  --surface: #eef1f5;
   --muted: #eef2f7;
   --muted-foreground: #5b6b7f;
   --border: #dbe3ef;
   --card: #ffffff;
   --card-foreground: #0b1220;
-  --glass: rgb(255 255 255 / 0.72);
+  --glass: rgb(255 255 255 / 0.78);
   --ring: #93c5fd;
+  --accent: #f59e0b;
+  --success: #059669;
+  --success-foreground: #ffffff;
+  --success-soft: #ecfdf5;
+
+  /* Radius */
+  --ds-radius-sm: 0.375rem;
+  --ds-radius-md: 0.75rem;
+  --ds-radius-lg: 1rem;
+  --ds-radius-xl: 1.375rem;
+
+  /* Shadows */
+  --ds-shadow-soft: 0 4px 24px -4px rgb(15 23 42 / 0.08);
+  --ds-shadow-card: 0 8px 28px -12px rgb(15 23 42 / 0.16);
+  --ds-shadow-lift: 0 16px 40px -12px rgb(30 75 143 / 0.28);
 }
 
 * {
@@ -45,8 +79,8 @@ html {
 
 body {
   background:
-    radial-gradient(1200px 600px at 10% -10%, rgb(59 130 246 / 0.12), transparent 55%),
-    radial-gradient(900px 500px at 90% 0%, rgb(37 99 235 / 0.08), transparent 50%),
+    radial-gradient(1200px 600px at 10% -10%, rgb(30 75 143 / 0.1), transparent 55%),
+    radial-gradient(900px 500px at 90% 0%, rgb(37 99 235 / 0.06), transparent 50%),
     var(--background);
   color: var(--foreground);
   font-family: var(--font-sans), system-ui, sans-serif;
@@ -58,6 +92,35 @@ body {
   outline-offset: 2px;
 }
 
+/* Typography */
+.text-display {
+  font-size: clamp(1.75rem, 2.4vw, 2.5rem);
+  font-weight: 650;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+}
+
+.text-title {
+  font-size: clamp(1.25rem, 1.6vw, 1.5rem);
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+}
+
+.text-body {
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--muted-foreground);
+}
+
+.text-caption {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+
 @keyframes slider-progress {
   from {
     width: 0%;
@@ -67,19 +130,28 @@ body {
   }
 }
 
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
 .glass-panel {
   background: var(--glass);
   border: 1px solid rgb(255 255 255 / 0.55);
-  box-shadow: var(--shadow-soft);
+  box-shadow: var(--ds-shadow-soft);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
 }
 
 .card-surface {
-  border-radius: var(--radius-card);
+  border-radius: var(--ds-radius-xl);
   background: var(--card);
   border: 1px solid var(--border);
-  box-shadow: var(--shadow-soft);
+  box-shadow: var(--ds-shadow-card);
   transition:
     transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
     box-shadow 220ms cubic-bezier(0.22, 1, 0.36, 1),
@@ -89,9 +161,21 @@ body {
 @media (hover: hover) and (pointer: fine) {
   .card-surface:hover {
     transform: translateY(-4px);
-    border-color: rgb(147 197 253 / 0.85);
-    box-shadow: var(--shadow-lift);
+    border-color: rgb(147 197 253 / 0.9);
+    box-shadow: var(--ds-shadow-lift);
   }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgb(226 232 240 / 0.7) 25%,
+    rgb(241 245 249 / 0.95) 50%,
+    rgb(226 232 240 / 0.7) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+  border-radius: var(--ds-radius-md);
 }
 
 .hide-scrollbar {

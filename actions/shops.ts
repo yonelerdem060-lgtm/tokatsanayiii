@@ -29,6 +29,10 @@ function formatShop(shop: {
   image: string | null;
   isFeatured: boolean;
   featuredSortOrder: number;
+  isShopOfWeek: boolean;
+  viewCount: number;
+  phoneClickCount: number;
+  whatsappClickCount: number;
   createdAt: Date;
   updatedAt: Date;
   categories: { category: { id: string; name: string; slug: string } }[];
@@ -53,6 +57,10 @@ function formatShop(shop: {
     gallery,
     isFeatured: shop.isFeatured,
     featuredSortOrder: shop.featuredSortOrder,
+    isShopOfWeek: shop.isShopOfWeek,
+    viewCount: shop.viewCount,
+    phoneClickCount: shop.phoneClickCount,
+    whatsappClickCount: shop.whatsappClickCount,
     createdAt: shop.createdAt,
     updatedAt: shop.updatedAt,
     categories: shop.categories.map((item) => item.category),
@@ -299,6 +307,7 @@ export async function createShop(formData: FormData) {
       brandIds: formData.getAll("brandIds").map(String),
       isFeatured: formData.get("isFeatured") === "true",
       featuredSortOrder: Number(formData.get("featuredSortOrder") ?? 0),
+      isShopOfWeek: formData.get("isShopOfWeek") === "true",
     };
 
     const parsed = shopSchema.safeParse(raw);
@@ -310,6 +319,13 @@ export async function createShop(formData: FormData) {
     const slug = await uniqueShopSlug(data.name);
 
     const shop = await prisma.$transaction(async (tx) => {
+      if (data.isShopOfWeek) {
+        await tx.shop.updateMany({
+          where: { isShopOfWeek: true },
+          data: { isShopOfWeek: false },
+        });
+      }
+
       const created = await tx.shop.create({
         data: {
           name: data.name,
@@ -323,6 +339,7 @@ export async function createShop(formData: FormData) {
           image: data.image,
           isFeatured: data.isFeatured,
           featuredSortOrder: data.featuredSortOrder,
+          isShopOfWeek: data.isShopOfWeek,
           categories: {
             create: data.categoryIds.map((categoryId) => ({ categoryId })),
           },
@@ -379,6 +396,7 @@ export async function updateShop(id: string, formData: FormData) {
       brandIds: formData.getAll("brandIds").map(String),
       isFeatured: formData.get("isFeatured") === "true",
       featuredSortOrder: Number(formData.get("featuredSortOrder") ?? 0),
+      isShopOfWeek: formData.get("isShopOfWeek") === "true",
     };
 
     const parsed = shopSchema.safeParse(raw);
@@ -399,6 +417,13 @@ export async function updateShop(id: string, formData: FormData) {
         : await uniqueShopSlug(data.name, id);
 
     await prisma.$transaction(async (tx) => {
+      if (data.isShopOfWeek) {
+        await tx.shop.updateMany({
+          where: { isShopOfWeek: true, NOT: { id } },
+          data: { isShopOfWeek: false },
+        });
+      }
+
       await tx.shopCategory.deleteMany({ where: { shopId: id } });
       await tx.shopVehicleType.deleteMany({ where: { shopId: id } });
       await tx.shopBrand.deleteMany({ where: { shopId: id } });
@@ -416,6 +441,7 @@ export async function updateShop(id: string, formData: FormData) {
           mapUrl: data.mapUrl,
           isFeatured: data.isFeatured,
           featuredSortOrder: data.featuredSortOrder,
+          isShopOfWeek: data.isShopOfWeek,
           categories: {
             create: data.categoryIds.map((categoryId) => ({ categoryId })),
           },
@@ -509,6 +535,7 @@ export async function createShopFromInput(input: unknown) {
   data.gallery.forEach((url) => formData.append("gallery", url));
   formData.set("isFeatured", String(data.isFeatured));
   formData.set("featuredSortOrder", String(data.featuredSortOrder));
+  formData.set("isShopOfWeek", String(data.isShopOfWeek));
   data.categoryIds.forEach((id) => formData.append("categoryIds", id));
   data.vehicleTypeIds.forEach((id) => formData.append("vehicleTypeIds", id));
   data.brandIds.forEach((id) => formData.append("brandIds", id));
@@ -531,6 +558,7 @@ export async function updateShopFromInput(id: string, input: unknown) {
   data.gallery.forEach((url) => formData.append("gallery", url));
   formData.set("isFeatured", String(data.isFeatured));
   formData.set("featuredSortOrder", String(data.featuredSortOrder));
+  formData.set("isShopOfWeek", String(data.isShopOfWeek));
   data.categoryIds.forEach((cid) => formData.append("categoryIds", cid));
   data.vehicleTypeIds.forEach((vid) => formData.append("vehicleTypeIds", vid));
   data.brandIds.forEach((bid) => formData.append("brandIds", bid));

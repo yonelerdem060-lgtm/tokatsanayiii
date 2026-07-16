@@ -14,10 +14,10 @@ export function Reveal({
   return (
     <motion.div
       className={className}
-      initial={{ opacity: 0, y: 18 }}
+      initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-64px" }}
-      transition={{ duration: 0.45, delay, ease }}
+      viewport={{ once: true, margin: "-72px" }}
+      transition={{ duration: 0.5, delay, ease }}
       {...props}
     >
       {children}
@@ -41,7 +41,7 @@ export function Stagger({
       variants={{
         hidden: {},
         show: {
-          transition: { staggerChildren: 0.06 },
+          transition: { staggerChildren: 0.07 },
         },
       }}
     >
@@ -61,13 +61,34 @@ export function StaggerItem({
     <motion.div
       className={cn(className)}
       variants={{
-        hidden: { opacity: 0, y: 16 },
+        hidden: { opacity: 0, y: 18 },
         show: {
           opacity: 1,
           y: 0,
-          transition: { duration: 0.4, ease },
+          transition: { duration: 0.42, ease },
         },
       }}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+export function FadeIn({
+  children,
+  className,
+  delay = 0,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  delay?: number;
+}) {
+  return (
+    <motion.div
+      className={className}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.35, delay, ease }}
     >
       {children}
     </motion.div>
