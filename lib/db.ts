@@ -3,6 +3,7 @@ import { resolveDatabaseUrl } from "@/lib/database-url";
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
+  prismaUrl: string | undefined;
 };
 
 function getDatasourceUrl() {
@@ -18,14 +19,18 @@ function getDatasourceUrl() {
 
 const datasourceUrl = getDatasourceUrl();
 
-export const prisma =
-  globalForPrisma.prisma ??
-  new PrismaClient({
+/** Hot-reload’da URL (havuz) değiştiyse eski client’ı bırak */
+function createClient(url: string | undefined) {
+  return new PrismaClient({
     log: process.env.NODE_ENV === "development" ? ["error", "warn"] : ["error"],
-    ...(datasourceUrl
-      ? { datasources: { db: { url: datasourceUrl } } }
-      : {}),
+    ...(url ? { datasources: { db: { url } } } : {}),
   });
+}
 
-// Warm serverless instances'ta bağlantı yeniden kullanım
+export const prisma =
+  globalForPrisma.prisma && globalForPrisma.prismaUrl === datasourceUrl
+    ? globalForPrisma.prisma
+    : createClient(datasourceUrl);
+
 globalForPrisma.prisma = prisma;
+globalForPrisma.prismaUrl = datasourceUrl;

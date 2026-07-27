@@ -6,17 +6,28 @@
  */
 import { spawnSync } from "node:child_process";
 
-function withServerlessMysqlParams(url) {
+function withMysqlPoolParams(url) {
   try {
     const parsed = new URL(url);
-    if (!parsed.searchParams.has("connect_timeout")) {
-      parsed.searchParams.set("connect_timeout", "5");
+    const isDev = process.env.NODE_ENV !== "production";
+    const desiredLimit = Number(
+      process.env.MYSQL_CONNECTION_LIMIT?.trim() || (isDev ? "10" : "5"),
+    );
+    const currentLimit = Number(parsed.searchParams.get("connection_limit") || "0");
+    if (!parsed.searchParams.has("connection_limit") || currentLimit < 3) {
+      parsed.searchParams.set("connection_limit", String(desiredLimit));
     }
     if (!parsed.searchParams.has("pool_timeout")) {
-      parsed.searchParams.set("pool_timeout", "5");
+      parsed.searchParams.set(
+        "pool_timeout",
+        process.env.MYSQL_POOL_TIMEOUT?.trim() || (isDev ? "20" : "15"),
+      );
     }
-    if (!parsed.searchParams.has("connection_limit")) {
-      parsed.searchParams.set("connection_limit", "1");
+    if (!parsed.searchParams.has("connect_timeout")) {
+      parsed.searchParams.set(
+        "connect_timeout",
+        process.env.MYSQL_CONNECT_TIMEOUT?.trim() || (isDev ? "15" : "10"),
+      );
     }
     return parsed.toString();
   } catch {
@@ -26,7 +37,7 @@ function withServerlessMysqlParams(url) {
 
 function resolveDatabaseUrl() {
   const existing = process.env.DATABASE_URL?.trim();
-  if (existing) return withServerlessMysqlParams(existing);
+  if (existing) return withMysqlPoolParams(existing);
 
   const host = process.env.MYSQL_HOST?.trim();
   const user = process.env.MYSQL_USER?.trim();
@@ -40,7 +51,7 @@ function resolveDatabaseUrl() {
   }
 
   const auth = `${encodeURIComponent(user)}:${encodeURIComponent(password)}`;
-  return withServerlessMysqlParams(
+  return withMysqlPoolParams(
     `mysql://${auth}@${host}:${port}/${encodeURIComponent(database)}`,
   );
 }
