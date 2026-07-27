@@ -11,8 +11,8 @@ Tokat Sanayi Sitesi için geliştirilmiş dijital rehber platformu. Esnaf ve mü
 ### Ziyaretçi (public)
 - Ana sayfa arama ve filtreleme (kategori, araç tipi, marka, firma adı/telefon/adres)
 - Mobil uyumlu arayüz: sticky arama, filtre paneli, alt navigasyon
-- Dükkan kartlarında tek tıkla **Ara** ve **WhatsApp**
-- Dükkan detay sayfası (`/dukkan/[slug]`) — galeri, harita, çalışma saatleri
+- Dükkân kartlarında tek tıkla **Ara** ve **WhatsApp**
+- Dükkân detay sayfası (`/dukkan/[slug]`) — galeri, harita, çalışma saatleri
 - Popüler kategoriler, araç tipleri, marka rehberi
 - Sponsorlu kampanyalar ve öne çıkan firmalar
 - Haber / duyuru bölümü
@@ -21,7 +21,7 @@ Tokat Sanayi Sitesi için geliştirilmiş dijital rehber platformu. Esnaf ve mü
 - SEO: `sitemap.xml`, `robots.txt`, Open Graph meta
 
 ### Yönetim (admin)
-- Dükkan CRUD — fotoğraf, galeri, slug, WhatsApp, harita, öne çıkan sıra
+- Dükkân CRUD — fotoğraf, galeri, slug, WhatsApp, harita, öne çıkan sıra
 - Kategori, araç tipi, marka yönetimi
 - Reklam slider ve haber yönetimi (kapak görseli)
 - İletişim mesajları (okundu işaretleme, arama)
@@ -149,7 +149,7 @@ Görseller Cloudinary’de tutulur; repoda `public/uploads` veya büyük slide d
 | `npm run lint` | ESLint |
 | `npm run db:push` | Şemayı veritabanına uygula |
 | `npm run db:seed` | Örnek veri + admin |
-| `npm run db:import-shops` | Tokat dükkan import scripti |
+| `npm run db:import-shops` | Tokat dükkân import scripti |
 | `npm run db:studio` | Prisma Studio |
 
 ---

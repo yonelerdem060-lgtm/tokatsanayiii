@@ -215,8 +215,8 @@ export function ShopGrid({
           <p className="text-lg font-semibold">Sonuç bulunamadı</p>
           <p className="mt-1 max-w-sm text-sm text-muted-foreground">
             {hasActiveQuery
-              ? "Seçtiğiniz filtre veya aramaya uygun dükkan yok. Filtreleri değiştirmeyi deneyin."
-              : "Henüz kayıtlı dükkan bulunmuyor."}
+              ? "Seçtiğiniz filtre veya aramaya uygun dükkân yok. Filtreleri değiştirmeyi deneyin."
+              : "Henüz kayıtlı dükkân bulunmuyor."}
           </p>
         </div>
       ) : (

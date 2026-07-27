@@ -140,7 +140,7 @@ export function HomeSearch({
             Ne arıyorsun?
           </h2>
           <p className="mt-1 text-sm text-blue-100/85">
-            {totalShops}+ işletme · ustayı, dükkanı veya hizmeti tek aramada bul
+            {totalShops}+ işletme · ustayı, dükkânı veya hizmeti tek aramada bul
           </p>
         </div>
 

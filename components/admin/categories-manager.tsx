@@ -15,7 +15,7 @@ export function CategoriesManager({ items }: CategoriesManagerProps) {
   return (
     <EntityManager
       title="Kategoriler"
-      description="Motor ustası, yedek parça gibi dükkan kategorilerini yönetin."
+      description="Motor ustası, yedek parça gibi dükkân kategorilerini yönetin."
       items={items}
       onCreate={async (name) => {
         const result = await createCategoryFromInput({ name });

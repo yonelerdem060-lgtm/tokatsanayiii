@@ -18,15 +18,15 @@ export default async function NewShopPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Yeni Dükkan Ekle</h1>
+        <h1 className="text-2xl font-bold">Yeni Dükkân Ekle</h1>
         <p className="text-muted-foreground">
-          Dükkan bilgilerini ve uzmanlık alanlarını girin.
+          Dükkân bilgilerini ve uzmanlık alanlarını girin.
         </p>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Dükkan Bilgileri</CardTitle>
+          <CardTitle>Dükkân Bilgileri</CardTitle>
         </CardHeader>
         <CardContent>
           <ShopForm

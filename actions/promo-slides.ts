@@ -1,7 +1,8 @@
 "use server";
 
 import { requireAdmin } from "@/lib/admin";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
+import { CACHE_TAGS } from "@/lib/cache-tags";
 import { prisma } from "@/lib/db";
 import type { PromoSlide } from "@/lib/promo-slides";
 import { deleteUploadedFile } from "@/lib/uploads";
@@ -40,10 +41,15 @@ function formatPromoSlide(slide: {
 
 export async function getActivePromoSlides() {
   try {
-    const slides = await prisma.promoSlide.findMany({
-      where: { isActive: true },
-      orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
-    });
+    const slides = await unstable_cache(
+      async () =>
+        prisma.promoSlide.findMany({
+          where: { isActive: true },
+          orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+        }),
+      ["active-promo-slides-v1"],
+      { revalidate: 120, tags: [CACHE_TAGS.promoSlides] },
+    )();
 
     return success(slides.map(formatPromoSlide));
   } catch (error) {
@@ -102,6 +108,7 @@ export async function createPromoSlideFromInput(input: unknown) {
     });
 
     revalidatePath("/");
+    revalidateTag(CACHE_TAGS.promoSlides);
     revalidatePath("/admin/promo-slides");
 
     return success(formatPromoSlide(slide));
@@ -140,6 +147,7 @@ export async function updatePromoSlideFromInput(id: string, input: unknown) {
     }
 
     revalidatePath("/");
+    revalidateTag(CACHE_TAGS.promoSlides);
     revalidatePath("/admin/promo-slides");
     revalidatePath(`/admin/promo-slides/${id}/edit`);
 
@@ -160,6 +168,7 @@ export async function deletePromoSlide(id: string) {
     await deleteUploadedFile(existing.image);
 
     revalidatePath("/");
+    revalidateTag(CACHE_TAGS.promoSlides);
     revalidatePath("/admin/promo-slides");
 
     return success(undefined);
@@ -178,6 +187,7 @@ export async function togglePromoSlideActive(id: string, isActive: boolean) {
     });
 
     revalidatePath("/");
+    revalidateTag(CACHE_TAGS.promoSlides);
     revalidatePath("/admin/promo-slides");
 
     return success(formatPromoSlide(slide));

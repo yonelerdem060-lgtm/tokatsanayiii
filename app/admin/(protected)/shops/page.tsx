@@ -30,15 +30,15 @@ export default async function AdminShopsPage({ searchParams }: AdminShopsPagePro
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Dükkanlar</h1>
+          <h1 className="text-2xl font-bold">Dükkânlar</h1>
           <p className="text-muted-foreground">
-            Sanayi sitesindeki dükkanları yönetin. Toplam {shopPage.total} kayıt.
+            Sanayi sitesindeki dükkânları yönetin. Toplam {shopPage.total} kayıt.
           </p>
         </div>
         <Link href={adminPath("/shops/new")}>
           <Button>
             <Plus className="h-4 w-4" />
-            Yeni Dükkan
+            Yeni Dükkân
           </Button>
         </Link>
       </div>
@@ -74,9 +74,9 @@ export default async function AdminShopsPage({ searchParams }: AdminShopsPagePro
               <>“{q}” için sonuç bulunamadı.</>
             ) : (
               <>
-                Henüz dükkan eklenmemiş.{" "}
+                Henüz dükkân eklenmemiş.{" "}
                 <Link href={adminPath("/shops/new")} className="text-primary hover:underline">
-                  İlk dükkanı ekleyin
+                  İlk dükkânı ekleyin
                 </Link>
               </>
             )}

@@ -11,7 +11,7 @@ export default function BaskanLoginPage() {
           </p>
           <CardTitle className="mt-1">Başkan Girişi</CardTitle>
           <CardDescription>
-            Bu panel yalnızca haber yayınlamak içindir. Dükkan ve site yönetimi burada yoktur.
+            Bu panel yalnızca haber yayınlamak içindir. Dükkân ve site yönetimi burada yoktur.
           </CardDescription>
         </CardHeader>
         <CardContent>

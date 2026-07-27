@@ -33,13 +33,13 @@ export default async function EditShopPage({ params }: EditShopPageProps) {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Dükkan Düzenle</h1>
+        <h1 className="text-2xl font-bold">Dükkân Düzenle</h1>
         <p className="text-muted-foreground">{shop.name}</p>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Dükkan Bilgileri</CardTitle>
+          <CardTitle>Dükkân Bilgileri</CardTitle>
         </CardHeader>
         <CardContent>
           <ShopForm

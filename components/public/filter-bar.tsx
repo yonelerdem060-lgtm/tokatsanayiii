@@ -266,7 +266,7 @@ export function FilterBar({
                     setSuggestOpen(true);
                   }}
                   onFocus={() => setSuggestOpen(true)}
-                  placeholder="Ara: lastik, klima, kaporta, dükkan adı..."
+                  placeholder="Ara: lastik, klima, kaporta, dükkân adı..."
                   enterKeyHint="search"
                   autoComplete="off"
                   className="h-14 rounded-[var(--ds-radius-lg)] border-slate-200 bg-slate-50/90 pl-11 pr-20 text-base font-medium shadow-inner sm:h-12 sm:text-sm"
@@ -403,7 +403,7 @@ export function FilterBar({
 
         <div className="flex flex-wrap items-center justify-between gap-2 px-0.5">
           <p className="text-sm text-muted-foreground">
-            <span className="font-semibold text-slate-900">{resultCount}</span> dükkan
+            <span className="font-semibold text-slate-900">{resultCount}</span> dükkân
             {activeCount > 0 ? " · filtrelendi" : ""}
             {isPending ? " · güncelleniyor…" : ""}
           </p>

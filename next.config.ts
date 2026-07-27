@@ -29,6 +29,7 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   // localhost ile 127.0.0.1 karışınca Turbopack HMR uyarısı/hata üretir
   allowedDevOrigins: ["127.0.0.1", "localhost"],
+  poweredByHeader: false,
   turbopack: {
     root: process.cwd(),
   },

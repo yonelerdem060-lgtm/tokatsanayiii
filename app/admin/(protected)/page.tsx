@@ -24,7 +24,7 @@ export default async function AdminDashboardPage() {
 
   const stats = [
     {
-      label: "Dükkanlar",
+      label: "Dükkânlar",
       value: shopsResult.success ? shopsResult.data.total : 0,
       href: adminPath("/shops"),
       icon: Store,
@@ -72,7 +72,7 @@ export default async function AdminDashboardPage() {
       <div>
         <h1 className="text-2xl font-bold">Yönetim Paneli</h1>
         <p className="text-muted-foreground">
-          Dükkanları ve filtreleme verilerini buradan yönetebilirsiniz.
+          Dükkânları ve filtreleme verilerini buradan yönetebilirsiniz.
         </p>
       </div>
 

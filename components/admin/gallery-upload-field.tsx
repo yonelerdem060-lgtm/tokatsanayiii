@@ -16,7 +16,7 @@ interface GalleryUploadFieldProps {
 }
 
 export function GalleryUploadField({
-  label = "Dükkan Fotoğrafları",
+  label = "Dükkân Fotoğrafları",
   cover,
   gallery,
   onChange,

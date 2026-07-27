@@ -116,7 +116,7 @@ export function ShopForm({
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="grid gap-6 md:grid-cols-2">
         <div className="space-y-2">
-          <Label htmlFor="name">Dükkan Adı *</Label>
+          <Label htmlFor="name">Dükkân Adı *</Label>
           <Input
             id="name"
             value={name}
@@ -185,7 +185,7 @@ export function ShopForm({
           id="description"
           value={description}
           onChange={(event) => setDescription(event.target.value)}
-          placeholder="Dükkan hakkında kısa bilgi..."
+          placeholder="Dükkân hakkında kısa bilgi..."
         />
       </div>
 
@@ -269,7 +269,7 @@ export function ShopForm({
 
       <div className="flex gap-3">
         <Button type="submit" disabled={loading}>
-          {loading ? "Kaydediliyor..." : isEditing ? "Güncelle" : "Dükkan Ekle"}
+          {loading ? "Kaydediliyor..." : isEditing ? "Güncelle" : "Dükkân Ekle"}
         </Button>
         <Button type="button" variant="outline" onClick={() => router.back()}>
           İptal

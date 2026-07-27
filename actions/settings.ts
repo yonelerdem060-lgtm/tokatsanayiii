@@ -1,6 +1,7 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
+import { CACHE_TAGS } from "@/lib/cache-tags";
 import { requireAdmin } from "@/lib/admin";
 import { prisma } from "@/lib/db";
 import { getResolvedSiteConfig } from "@/lib/site-settings";
@@ -69,6 +70,7 @@ export async function updateSiteSettings(input: unknown) {
     });
 
     revalidatePath("/");
+    revalidateTag(CACHE_TAGS.siteConfig);
     revalidatePath("/hakkimizda");
     revalidatePath("/iletisim");
     revalidatePath("/admin/settings");

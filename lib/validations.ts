@@ -41,7 +41,7 @@ export const nameSchema = z.object({
 });
 
 export const shopSchema = z.object({
-  name: z.string().min(2, "Dükkan adı en az 2 karakter olmalı.").max(150),
+  name: z.string().min(2, "Dükkân adı en az 2 karakter olmalı.").max(150),
   description: z.string().max(1000).optional(),
   address: z.string().min(5, "Adres en az 5 karakter olmalı.").max(300),
   phone: z.string().min(7, "Geçerli bir telefon numarası girin.").max(20),

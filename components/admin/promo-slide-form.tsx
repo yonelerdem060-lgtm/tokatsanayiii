@@ -169,7 +169,7 @@ export function PromoSlideForm({ initialValues }: PromoSlideFormProps) {
             value={ctaText}
             onChange={(event) => setCtaText(event.target.value)}
             required
-            placeholder="Örn: Dükkanı Gör"
+            placeholder="Örn: Dükkânı Gör"
           />
         </div>
         <div className="space-y-2">

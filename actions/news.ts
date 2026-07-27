@@ -1,7 +1,8 @@
 "use server";
 
 import { requireNewsEditor } from "@/lib/admin";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
+import { CACHE_TAGS } from "@/lib/cache-tags";
 import { prisma } from "@/lib/db";
 import { deleteUploadedFile } from "@/lib/uploads";
 import { failure, getErrorMessage, slugify, success } from "@/lib/utils";
@@ -24,11 +25,17 @@ function formatNewsPost(post: {
 
 export async function getPublishedNews(limit?: number) {
   try {
-    const posts = await prisma.newsPost.findMany({
-      where: { isPublished: true },
-      orderBy: [{ publishedAt: "desc" }, { createdAt: "desc" }],
-      take: limit,
-    });
+    const take = limit ?? 50;
+    const posts = await unstable_cache(
+      async () =>
+        prisma.newsPost.findMany({
+          where: { isPublished: true },
+          orderBy: [{ publishedAt: "desc" }, { createdAt: "desc" }],
+          take,
+        }),
+      ["published-news-v1", String(take)],
+      { revalidate: 120, tags: [CACHE_TAGS.news] },
+    )();
     return success(posts.map(formatNewsPost));
   } catch (error) {
     return failure(getErrorMessage(error));
@@ -102,6 +109,7 @@ export async function createNewsFromInput(input: unknown) {
     });
 
     revalidatePath("/");
+    revalidateTag(CACHE_TAGS.news);
     revalidatePath("/haberler");
     revalidatePath("/admin/news");
     revalidatePath("/baskan");
@@ -145,6 +153,7 @@ export async function updateNewsFromInput(id: string, input: unknown) {
     }
 
     revalidatePath("/");
+    revalidateTag(CACHE_TAGS.news);
     revalidatePath("/haberler");
     revalidatePath(`/haberler/${post.slug}`);
     revalidatePath("/admin/news");
@@ -170,6 +179,7 @@ export async function deleteNews(id: string) {
     await deleteUploadedFile(existing.coverImage);
 
     revalidatePath("/");
+    revalidateTag(CACHE_TAGS.news);
     revalidatePath("/haberler");
     revalidatePath("/admin/news");
     revalidatePath("/baskan");

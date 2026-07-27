@@ -1,6 +1,11 @@
 import { Suspense } from "react";
 import { getFilterOptions } from "@/actions/filters";
-import { getCategoryStats, getFeaturedShops, getShopOfTheWeek } from "@/actions/homepage";
+import {
+  getCategoryStats,
+  getFeaturedShops,
+  getShopCount,
+  getShopOfTheWeek,
+} from "@/actions/homepage";
 import { getPublishedNews } from "@/actions/news";
 import { getActivePromoSlides } from "@/actions/promo-slides";
 import { getShops } from "@/actions/shops";
@@ -31,45 +36,12 @@ export default async function HomePage({ searchParams }: HomePageProps) {
   const params = await searchParams;
   const { category, vehicleType, brand, q } = params;
   const page = parsePage(params.page);
-
-  const [
-    filterResult,
-    shopsResult,
-    promoResult,
-    categoryStatsResult,
-    featuredResult,
-    weekResult,
-    newsResult,
-    siteConfig,
-  ] = await Promise.all([
-    getFilterOptions({ category, vehicleType, brand }),
-    getShops({ category, vehicleType, brand, q, page, pageSize: SHOPS_PAGE_SIZE }),
-    getActivePromoSlides(),
-    getCategoryStats(),
-    getFeaturedShops(),
-    getShopOfTheWeek(),
-    getPublishedNews(6),
-    getResolvedSiteConfig(),
-  ]);
-
-  const filterOptions = filterResult.success
-    ? filterResult.data
-    : { categories: [], vehicleTypes: [], brands: [] };
-
-  const shopPage = shopsResult.success
-    ? shopsResult.data
-    : { items: [], total: 0, page: 1, pageSize: SHOPS_PAGE_SIZE, totalPages: 1 };
-  const promoSlides = promoResult.success ? promoResult.data : [];
-  const categoryStats = categoryStatsResult.success ? categoryStatsResult.data : [];
-  const featuredShops = featuredResult.success ? featuredResult.data : [];
-  const weekShop = weekResult.success ? weekResult.data : null;
-  const newsPosts = newsResult.success ? newsResult.data : [];
   const hasFilters = !!(category || vehicleType || brand || q);
 
   return (
     <>
       <Suspense fallback={<HomeHeroSkeleton />}>
-        <HomeHero categories={categoryStats} slides={promoSlides} />
+        <HomeHeroSection />
       </Suspense>
 
       <Suspense
@@ -79,15 +51,10 @@ export default async function HomePage({ searchParams }: HomePageProps) {
           </div>
         }
       >
-        <HomeSearch
-          totalShops={shopPage.total || featuredShops.length}
-          shopNames={[
-            ...shopPage.items.map((shop) => shop.name),
-            ...featuredShops.map((shop) => shop.name),
-          ]}
-          categories={filterOptions.categories}
-          vehicleTypes={filterOptions.vehicleTypes}
-          brands={filterOptions.brands}
+        <HomeSearchSection
+          category={category}
+          vehicleType={vehicleType}
+          brand={brand}
         />
       </Suspense>
 
@@ -95,13 +62,21 @@ export default async function HomePage({ searchParams }: HomePageProps) {
         <MobileNeedFinder />
       </Suspense>
 
-      <WeekFeatured shop={weekShop} />
+      <Suspense fallback={<SectionPulse height="h-48" />}>
+        <WeekFeaturedSection />
+      </Suspense>
 
-      <FeaturedShops shops={featuredShops} />
+      <Suspense fallback={<SectionPulse height="h-64" />}>
+        <FeaturedShopsSection />
+      </Suspense>
 
-      <NewsPreview posts={newsPosts} />
+      <Suspense fallback={<SectionPulse height="h-56" />}>
+        <NewsPreviewSection />
+      </Suspense>
 
-      <AdCtaBanner adEmail={siteConfig.adEmail} />
+      <Suspense fallback={null}>
+        <AdCtaSection />
+      </Suspense>
 
       <section
         id="rehber"
@@ -121,24 +96,144 @@ export default async function HomePage({ searchParams }: HomePageProps) {
             </div>
           }
         >
-          <DirectoryBrowser
-            categories={filterOptions.categories}
-            vehicleTypes={filterOptions.vehicleTypes}
-            brands={filterOptions.brands}
-            suggestions={[
-              ...shopPage.items.map((shop) => shop.name),
-              ...featuredShops.map((shop) => shop.name),
-            ]}
-            shops={shopPage.items}
+          <DirectorySection
+            category={category}
+            vehicleType={vehicleType}
+            brand={brand}
+            q={q}
+            page={page}
             hasFilters={hasFilters}
-            total={shopPage.total}
-            page={shopPage.page}
-            totalPages={shopPage.totalPages}
-            searchQuery={q}
           />
         </Suspense>
       </section>
     </>
+  );
+}
+
+async function HomeHeroSection() {
+  const [promoResult, categoryStatsResult] = await Promise.all([
+    getActivePromoSlides(),
+    getCategoryStats(),
+  ]);
+
+  return (
+    <HomeHero
+      categories={categoryStatsResult.success ? categoryStatsResult.data : []}
+      slides={promoResult.success ? promoResult.data : []}
+    />
+  );
+}
+
+async function HomeSearchSection({
+  category,
+  vehicleType,
+  brand,
+}: {
+  category?: string;
+  vehicleType?: string;
+  brand?: string;
+}) {
+  const [filterResult, featuredResult, countResult] = await Promise.all([
+    getFilterOptions({ category, vehicleType, brand }),
+    getFeaturedShops(),
+    getShopCount(),
+  ]);
+
+  const filterOptions = filterResult.success
+    ? filterResult.data
+    : { categories: [], vehicleTypes: [], brands: [] };
+  const featuredShops = featuredResult.success ? featuredResult.data : [];
+  const totalShops = countResult.success ? countResult.data : featuredShops.length;
+
+  return (
+    <HomeSearch
+      totalShops={totalShops}
+      shopNames={featuredShops.map((shop) => shop.name)}
+      categories={filterOptions.categories}
+      vehicleTypes={filterOptions.vehicleTypes}
+      brands={filterOptions.brands}
+    />
+  );
+}
+
+async function WeekFeaturedSection() {
+  const result = await getShopOfTheWeek();
+  return <WeekFeatured shop={result.success ? result.data : null} />;
+}
+
+async function FeaturedShopsSection() {
+  const result = await getFeaturedShops();
+  return <FeaturedShops shops={result.success ? result.data : []} />;
+}
+
+async function NewsPreviewSection() {
+  const result = await getPublishedNews(6);
+  return <NewsPreview posts={result.success ? result.data : []} />;
+}
+
+async function AdCtaSection() {
+  const siteConfig = await getResolvedSiteConfig();
+  return <AdCtaBanner adEmail={siteConfig.adEmail} />;
+}
+
+async function DirectorySection({
+  category,
+  vehicleType,
+  brand,
+  q,
+  page,
+  hasFilters,
+}: {
+  category?: string;
+  vehicleType?: string;
+  brand?: string;
+  q?: string;
+  page: number;
+  hasFilters: boolean;
+}) {
+  const [filterResult, shopsResult, featuredResult] = await Promise.all([
+    getFilterOptions({ category, vehicleType, brand }),
+    getShops({
+      category,
+      vehicleType,
+      brand,
+      q,
+      page,
+      pageSize: SHOPS_PAGE_SIZE,
+    }),
+    getFeaturedShops(),
+  ]);
+
+  const filterOptions = filterResult.success
+    ? filterResult.data
+    : { categories: [], vehicleTypes: [], brands: [] };
+  const shopPage = shopsResult.success
+    ? shopsResult.data
+    : {
+        items: [],
+        total: 0,
+        page: 1,
+        pageSize: SHOPS_PAGE_SIZE,
+        totalPages: 1,
+      };
+  const featuredShops = featuredResult.success ? featuredResult.data : [];
+
+  return (
+    <DirectoryBrowser
+      categories={filterOptions.categories}
+      vehicleTypes={filterOptions.vehicleTypes}
+      brands={filterOptions.brands}
+      suggestions={[
+        ...shopPage.items.map((shop) => shop.name),
+        ...featuredShops.map((shop) => shop.name),
+      ]}
+      shops={shopPage.items}
+      hasFilters={hasFilters}
+      total={shopPage.total}
+      page={shopPage.page}
+      totalPages={shopPage.totalPages}
+      searchQuery={q}
+    />
   );
 }
 
@@ -150,5 +245,13 @@ function HomeHeroSkeleton() {
         <div className="skeleton order-1 aspect-[1920/860] w-full rounded-[var(--ds-radius-md)] lg:order-2" />
       </div>
     </section>
+  );
+}
+
+function SectionPulse({ height }: { height: string }) {
+  return (
+    <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+      <div className={`skeleton w-full rounded-[var(--ds-radius-xl)] ${height}`} />
+    </div>
   );
 }

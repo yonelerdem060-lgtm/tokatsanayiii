@@ -266,7 +266,7 @@ async function main() {
       subtitle: "Motor bakım & revizyon kampanyası",
       description:
         "Volkswagen ve Ford araçlarınız için bu ay özel fiyatlar. Sanayi Sitesi A Blok No:12",
-      ctaText: "Dükkanı Gör",
+      ctaText: "Dükkânı Gör",
       ctaHref: "/?category=motor-ustasi&vehicleType=otomobil",
       image: null as string | null,
       gradient: "from-blue-700 via-blue-600 to-indigo-700",

@@ -22,7 +22,7 @@ import { cn } from "@/lib/utils";
 
 const navItems = [
   { href: adminPath(), label: "Panel", icon: LayoutDashboard, exact: true },
-  { href: adminPath("/shops"), label: "Dükkanlar", icon: Store },
+  { href: adminPath("/shops"), label: "Dükkânlar", icon: Store },
   { href: adminPath("/promo-slides"), label: "Reklam Slider", icon: Megaphone },
   { href: adminPath("/news"), label: "Haberler", icon: Newspaper },
   {

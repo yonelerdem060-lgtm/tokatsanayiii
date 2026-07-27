@@ -2,6 +2,7 @@
 
 import { requireAdmin } from "@/lib/admin";
 import { revalidatePath } from "next/cache";
+import { revalidateCatalogPublicData } from "@/lib/revalidate-public";
 import { prisma } from "@/lib/db";
 import { failure, getErrorMessage, slugify, success } from "@/lib/utils";
 import { nameSchema } from "@/lib/validations";
@@ -43,7 +44,7 @@ export async function createBrand(formData: FormData) {
       data: { name: parsed.data.name, slug },
     });
 
-    revalidatePath("/");
+    revalidateCatalogPublicData();
     revalidatePath("/admin/brands");
 
     return success(brand);
@@ -72,7 +73,7 @@ export async function updateBrand(id: string, formData: FormData) {
       data: { name: parsed.data.name, slug },
     });
 
-    revalidatePath("/");
+    revalidateCatalogPublicData();
     revalidatePath("/admin/brands");
 
     return success(brand);
@@ -90,7 +91,7 @@ export async function deleteBrand(id: string) {
 
     await prisma.brand.delete({ where: { id } });
 
-    revalidatePath("/");
+    revalidateCatalogPublicData();
     revalidatePath("/admin/brands");
 
     return success(undefined);

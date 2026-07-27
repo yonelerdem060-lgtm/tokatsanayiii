@@ -30,7 +30,7 @@ function toWhatsAppLink(value: string) {
 export async function generateMetadata({ params }: ShopDetailPageProps): Promise<Metadata> {
   const { slug } = await params;
   const result = await getShopBySlug(slug);
-  if (!result.success) return { title: "Dükkan Bulunamadı" };
+  if (!result.success) return { title: "Dükkân Bulunamadı" };
   return {
     title: `${result.data.name} | Tokat Sanayi Sitesi`,
     description: result.data.description ?? `${result.data.name} — ${result.data.address}`,

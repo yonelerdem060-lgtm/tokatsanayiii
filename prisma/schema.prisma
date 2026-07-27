@@ -39,6 +39,8 @@ model Shop {
   brands       ShopBrand[]
   images       ShopImage[]
 
+  @@index([isFeatured, featuredSortOrder])
+  @@index([isShopOfWeek])
   @@map("shops")
 }
 
@@ -169,6 +171,7 @@ model PromoSlide {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  @@index([isActive, sortOrder])
   @@map("promo_slides")
 }
 
@@ -188,6 +191,7 @@ model NewsPost {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
+  @@index([isPublished, publishedAt])
   @@map("news_posts")
 }
 

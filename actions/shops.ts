@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/admin";
 import { prisma } from "@/lib/db";
 import { SHOPS_PAGE_SIZE, getTotalPages } from "@/lib/pagination";
+import { revalidateShopPublicData } from "@/lib/revalidate-public";
 import { expandSearchTerms } from "@/lib/smart-search";
 import { deleteUploadedFile } from "@/lib/uploads";
 import { failure, getErrorMessage, slugify, success } from "@/lib/utils";
@@ -15,6 +16,14 @@ const shopInclude = {
   vehicleTypes: { include: { vehicleType: true } },
   brands: { include: { brand: true } },
   images: { orderBy: { sortOrder: "asc" as const } },
+} as const;
+
+/** Liste / kart görünümü — tüm galeri yerine kapak + 1 görsel */
+const shopCardInclude = {
+  categories: { include: { category: true } },
+  vehicleTypes: { include: { vehicleType: true } },
+  brands: { include: { brand: true } },
+  images: { orderBy: { sortOrder: "asc" as const }, take: 1 },
 } as const;
 
 function formatShop(shop: {
@@ -177,7 +186,7 @@ export async function getShops(filters?: {
       prisma.shop.count({ where }),
       prisma.shop.findMany({
         where,
-        include: shopInclude,
+        include: shopCardInclude,
         orderBy: { name: "asc" },
         skip: (currentPage - 1) * take,
         take,
@@ -251,7 +260,7 @@ export async function getShopsByCategorySlugs(
       prisma.shop.count({ where }),
       prisma.shop.findMany({
         where,
-        include: shopInclude,
+        include: shopCardInclude,
         orderBy: { name: "asc" },
         skip: (currentPage - 1) * take,
         take,
@@ -278,7 +287,7 @@ export async function getShopById(id: string) {
     });
 
     if (!shop) {
-      return failure("Dükkan bulunamadı.");
+      return failure("Dükkân bulunamadı.");
     }
 
     return success(formatShop(shop));
@@ -295,7 +304,7 @@ export async function getShopBySlug(slug: string) {
     });
 
     if (!shop) {
-      return failure("Dükkan bulunamadı.");
+      return failure("Dükkân bulunamadı.");
     }
 
     return success(formatShop(shop));
@@ -382,7 +391,7 @@ export async function createShop(formData: FormData) {
       include: shopInclude,
     });
 
-    revalidatePath("/");
+    revalidateShopPublicData();
     revalidatePath("/mobilya-kereste");
     revalidatePath("/admin/shops");
     if (full) revalidatePath(`/dukkan/${full.slug}`);
@@ -426,7 +435,7 @@ export async function updateShop(id: string, formData: FormData) {
       where: { id },
       include: { images: true },
     });
-    if (!existing) return failure("Dükkan bulunamadı.");
+    if (!existing) return failure("Dükkân bulunamadı.");
 
     const slug =
       slugify(data.name) === slugify(existing.name)
@@ -490,7 +499,7 @@ export async function updateShop(id: string, formData: FormData) {
       include: shopInclude,
     });
 
-    revalidatePath("/");
+    revalidateShopPublicData();
     revalidatePath("/mobilya-kereste");
     revalidatePath("/admin/shops");
     revalidatePath(`/admin/shops/${id}/edit`);
@@ -515,7 +524,7 @@ export async function deleteShop(id: string) {
       where: { id },
       include: { images: true },
     });
-    if (!existing) return failure("Dükkan bulunamadı.");
+    if (!existing) return failure("Dükkân bulunamadı.");
 
     await prisma.shop.delete({ where: { id } });
 
@@ -526,7 +535,7 @@ export async function deleteShop(id: string) {
       await deleteUploadedFile(url);
     }
 
-    revalidatePath("/");
+    revalidateShopPublicData();
     revalidatePath("/mobilya-kereste");
     revalidatePath("/admin/shops");
     revalidatePath(`/dukkan/${existing.slug}`);

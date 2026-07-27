@@ -1,16 +1,30 @@
 "use server";
 
+import { unstable_cache } from "next/cache";
+import { CACHE_TAGS } from "@/lib/cache-tags";
 import { prisma } from "@/lib/db";
 import { failure, getErrorMessage, success } from "@/lib/utils";
 
+const shopCardInclude = {
+  categories: { include: { category: true } },
+  vehicleTypes: { include: { vehicleType: true } },
+  brands: { include: { brand: true } },
+  images: { orderBy: { sortOrder: "asc" as const }, take: 1 },
+} as const;
+
 export async function getCategoryStats() {
   try {
-    const categories = await prisma.category.findMany({
-      orderBy: { name: "asc" },
-      include: {
-        _count: { select: { shops: true } },
-      },
-    });
+    const categories = await unstable_cache(
+      async () =>
+        prisma.category.findMany({
+          orderBy: { name: "asc" },
+          include: {
+            _count: { select: { shops: true } },
+          },
+        }),
+      ["category-stats-v1"],
+      { revalidate: 120, tags: [CACHE_TAGS.categoryStats, CACHE_TAGS.filters] },
+    )();
 
     return success(
       categories.map((category) => ({
@@ -71,17 +85,17 @@ export async function getVehicleTypeStats() {
 
 export async function getFeaturedShops() {
   try {
-    const shops = await prisma.shop.findMany({
-      where: { isFeatured: true },
-      include: {
-        categories: { include: { category: true } },
-        vehicleTypes: { include: { vehicleType: true } },
-        brands: { include: { brand: true } },
-        images: { orderBy: { sortOrder: "asc" } },
-      },
-      orderBy: [{ featuredSortOrder: "asc" }, { name: "asc" }],
-      take: 6,
-    });
+    const shops = await unstable_cache(
+      async () =>
+        prisma.shop.findMany({
+          where: { isFeatured: true },
+          include: shopCardInclude,
+          orderBy: [{ featuredSortOrder: "asc" }, { name: "asc" }],
+          take: 6,
+        }),
+      ["featured-shops-v1"],
+      { revalidate: 120, tags: [CACHE_TAGS.featuredShops, CACHE_TAGS.shops] },
+    )();
 
     return success(
       shops.map((shop) => {
@@ -111,16 +125,16 @@ export async function getFeaturedShops() {
 
 export async function getShopOfTheWeek() {
   try {
-    const shop = await prisma.shop.findFirst({
-      where: { isShopOfWeek: true },
-      include: {
-        categories: { include: { category: true } },
-        vehicleTypes: { include: { vehicleType: true } },
-        brands: { include: { brand: true } },
-        images: { orderBy: { sortOrder: "asc" } },
-      },
-      orderBy: { updatedAt: "desc" },
-    });
+    const shop = await unstable_cache(
+      async () =>
+        prisma.shop.findFirst({
+          where: { isShopOfWeek: true },
+          include: shopCardInclude,
+          orderBy: { updatedAt: "desc" },
+        }),
+      ["shop-of-week-v1"],
+      { revalidate: 120, tags: [CACHE_TAGS.shopOfWeek, CACHE_TAGS.shops] },
+    )();
 
     if (!shop) return success(null);
 
@@ -136,6 +150,19 @@ export async function getShopOfTheWeek() {
       image: shop.image || gallery[0] || null,
       categories: shop.categories.map((item) => item.category),
     });
+  } catch (error) {
+    return failure(getErrorMessage(error));
+  }
+}
+
+export async function getShopCount() {
+  try {
+    const total = await unstable_cache(
+      async () => prisma.shop.count(),
+      ["shop-count-v1"],
+      { revalidate: 120, tags: [CACHE_TAGS.shops] },
+    )();
+    return success(total);
   } catch (error) {
     return failure(getErrorMessage(error));
   }

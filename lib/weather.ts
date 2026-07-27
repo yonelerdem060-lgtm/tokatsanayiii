@@ -18,6 +18,7 @@ export async function getTokatWeather(): Promise<TokatWeather | null> {
 
     const response = await fetch(url.toString(), {
       next: { revalidate: 1800 },
+      signal: AbortSignal.timeout(1500),
     });
 
     if (!response.ok) return null;

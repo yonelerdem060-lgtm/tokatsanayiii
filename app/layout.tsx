@@ -18,11 +18,11 @@ export const metadata: Metadata = {
     template: "%s | Tokat Sanayi Sitesi",
   },
   description:
-    "Tokat Sanayi Sitesi dükkan rehberi — kategori, araç tipi ve marka bazlı arama",
+    "Tokat Sanayi Sitesi dükkân rehberi — kategori, araç tipi ve marka bazlı arama",
   openGraph: {
     title: "Tokat Sanayi Sitesi Rehberi",
     description:
-      "Tokat Sanayi Sitesi dükkan rehberi — kategori, araç tipi ve marka bazlı arama",
+      "Tokat Sanayi Sitesi dükkân rehberi — kategori, araç tipi ve marka bazlı arama",
     locale: "tr_TR",
     type: "website",
   },
