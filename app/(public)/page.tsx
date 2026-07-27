@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import type { Metadata } from "next";
 import { getFilterOptions } from "@/actions/filters";
 import {
   getCategoryStats,
@@ -14,13 +15,28 @@ import { FeaturedShops } from "@/components/public/featured-shops";
 import { DirectoryBrowser } from "@/components/public/directory-browser";
 import { HomeHero } from "@/components/public/home-hero";
 import { HomeSearch } from "@/components/public/home-search";
+import { HomeSeoContent } from "@/components/public/home-seo-content";
 import { MobileNeedFinder } from "@/components/public/mobile-need-finder";
 import { NewsPreview } from "@/components/public/news-preview";
 import { ShopGridSkeleton } from "@/components/public/shop-grid";
 import { Reveal } from "@/components/public/motion";
 import { WeekFeatured } from "@/components/public/week-featured";
 import { parsePage, SHOPS_PAGE_SIZE } from "@/lib/pagination";
+import { SEO_DEFAULTS } from "@/lib/seo";
 import { getResolvedSiteConfig } from "@/lib/site-settings";
+
+export const metadata: Metadata = {
+  title: {
+    absolute: SEO_DEFAULTS.title,
+  },
+  description: SEO_DEFAULTS.description,
+  alternates: { canonical: "/" },
+  openGraph: {
+    title: SEO_DEFAULTS.title,
+    description: SEO_DEFAULTS.description,
+    url: "/",
+  },
+};
 
 interface HomePageProps {
   searchParams: Promise<{
@@ -78,12 +94,14 @@ export default async function HomePage({ searchParams }: HomePageProps) {
         <AdCtaSection />
       </Suspense>
 
+      <HomeSeoContent />
+
       <section
         id="rehber"
         className="mx-auto w-full max-w-7xl space-y-5 px-4 py-8 sm:px-6 lg:px-8"
       >
         <Reveal>
-          <h2 className="text-title">Arama sonuçları</h2>
+          <h2 className="text-title">Tokat Sanayi Sitesi dükkân rehberi</h2>
           <p className="mt-1 text-body">
             İstersen kategori, araç tipi veya marka ile daralt
           </p>

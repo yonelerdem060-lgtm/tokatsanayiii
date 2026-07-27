@@ -1,11 +1,21 @@
 import { ContactForm } from "@/components/public/contact-form";
+import { JsonLd, buildOrganizationSchema } from "@/components/seo/json-ld";
+import { siteConfig } from "@/lib/site-config";
 import { getResolvedSiteConfig } from "@/lib/site-settings";
-import { Clock, Mail, MapPin, Phone } from "lucide-react";
+import { Clock, ExternalLink, Mail, MapPin, Phone } from "lucide-react";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "İletişim | Tokat Sanayi Sitesi Rehberi",
-  description: "Tokat Sanayi Sitesi iletişim bilgileri ve mesaj formu",
+  title: "İletişim",
+  description:
+    "Tokat Sanayi Sitesi iletişim: Yeniyurt Mahallesi, Merkez/Tokat. Telefon, e-posta, çalışma saatleri ve mesaj formu.",
+  alternates: { canonical: "/iletisim" },
+  openGraph: {
+    title: "İletişim | Tokat Sanayi Sitesi",
+    description:
+      "Tokat Sanayi Sitesi adres, telefon ve mesaj formu. Yeniyurt Mahallesi, Merkez / Tokat.",
+    url: "/iletisim",
+  },
 };
 
 export default async function ContactPage() {
@@ -13,10 +23,12 @@ export default async function ContactPage() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+      <JsonLd data={buildOrganizationSchema()} />
       <div className="mb-10">
-        <h1 className="text-3xl font-bold">İletişim</h1>
+        <h1 className="text-3xl font-bold">İletişim — Tokat Sanayi Sitesi</h1>
         <p className="mt-2 text-muted-foreground">
-          Sorularınız, önerileriniz veya reklam talepleriniz için bize ulaşın
+          Sorularınız, önerileriniz veya reklam talepleriniz için bize ulaşın. Adresimiz Tokat
+          Merkez, Yeniyurt Mahallesi’ndedir.
         </p>
       </div>
 
@@ -26,15 +38,26 @@ export default async function ContactPage() {
             <h2 className="font-semibold">İletişim Bilgileri</h2>
             <ul className="mt-4 space-y-4 text-sm text-muted-foreground">
               <li className="flex items-start gap-3">
-                <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
-                {config.address}
+                <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-primary" aria-hidden />
+                <span>
+                  {config.address}
+                  <a
+                    href={siteConfig.mapUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-1 flex items-center gap-1 text-primary hover:underline"
+                  >
+                    Haritada aç
+                    <ExternalLink className="h-3.5 w-3.5" aria-hidden />
+                  </a>
+                </span>
               </li>
               <li>
                 <a
                   href={`tel:${config.phone.replace(/\s/g, "")}`}
                   className="flex items-center gap-3 hover:text-primary"
                 >
-                  <Phone className="h-5 w-5 text-primary" />
+                  <Phone className="h-5 w-5 text-primary" aria-hidden />
                   {config.phone}
                 </a>
               </li>
@@ -43,7 +66,7 @@ export default async function ContactPage() {
                   href={`mailto:${config.email}`}
                   className="flex items-center gap-3 hover:text-primary"
                 >
-                  <Mail className="h-5 w-5 text-primary" />
+                  <Mail className="h-5 w-5 text-primary" aria-hidden />
                   {config.email}
                 </a>
               </li>
@@ -54,7 +77,7 @@ export default async function ContactPage() {
             <h2 className="font-semibold">Çalışma Saatleri</h2>
             <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
               <li className="flex items-center gap-2">
-                <Clock className="h-4 w-4 text-primary" />
+                <Clock className="h-4 w-4 text-primary" aria-hidden />
                 {config.workingHours.weekday}
               </li>
               <li className="pl-6">{config.workingHours.saturday}</li>

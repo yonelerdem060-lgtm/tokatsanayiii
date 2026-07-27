@@ -1,26 +1,29 @@
 import type { MetadataRoute } from "next";
 import { prisma } from "@/lib/db";
+import { getSiteUrl } from "@/lib/seo";
 
-const baseUrl = process.env.NEXTAUTH_URL ?? "http://localhost:3000";
+const baseUrl = getSiteUrl();
 
 /** Build sırasında DB yoksa statik rotalarla devam et; canlıda istek anında üret */
 export const dynamic = "force-dynamic";
 
 function staticRoutes(): MetadataRoute.Sitemap {
+  const now = new Date();
   return [
-    { url: `${baseUrl}/`, changeFrequency: "daily", priority: 1 },
-    { url: `${baseUrl}/haberler`, changeFrequency: "daily", priority: 0.8 },
-    { url: `${baseUrl}/hakkimizda`, changeFrequency: "monthly", priority: 0.5 },
-    { url: `${baseUrl}/iletisim`, changeFrequency: "monthly", priority: 0.5 },
-    { url: `${baseUrl}/mobilya-kereste`, changeFrequency: "weekly", priority: 0.7 },
+    { url: `${baseUrl}/`, lastModified: now, changeFrequency: "daily", priority: 1 },
+    { url: `${baseUrl}/haberler`, lastModified: now, changeFrequency: "daily", priority: 0.8 },
+    { url: `${baseUrl}/hakkimizda`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
+    { url: `${baseUrl}/iletisim`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
+    {
+      url: `${baseUrl}/mobilya-kereste`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.7,
+    },
   ];
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  if (!process.env.DATABASE_URL) {
-    return staticRoutes();
-  }
-
   try {
     const [shops, news] = await Promise.all([
       prisma.shop.findMany({ select: { slug: true, updatedAt: true } }),

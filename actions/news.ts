@@ -3,6 +3,7 @@
 import { requireNewsEditor } from "@/lib/admin";
 import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
 import { CACHE_TAGS } from "@/lib/cache-tags";
+import { toDate, toDateOrNull } from "@/lib/dates";
 import { prisma } from "@/lib/db";
 import { deleteUploadedFile } from "@/lib/uploads";
 import { failure, getErrorMessage, slugify, success } from "@/lib/utils";
@@ -16,11 +17,16 @@ function formatNewsPost(post: {
   content: string;
   coverImage: string | null;
   isPublished: boolean;
-  publishedAt: Date | null;
-  createdAt: Date;
-  updatedAt: Date;
+  publishedAt: Date | string | null;
+  createdAt: Date | string;
+  updatedAt: Date | string;
 }) {
-  return { ...post };
+  return {
+    ...post,
+    publishedAt: toDateOrNull(post.publishedAt),
+    createdAt: toDate(post.createdAt),
+    updatedAt: toDate(post.updatedAt),
+  };
 }
 
 export async function getPublishedNews(limit?: number) {

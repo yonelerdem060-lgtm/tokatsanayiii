@@ -1,6 +1,7 @@
 "use client";
 
 import { Reveal, Stagger, StaggerItem } from "@/components/public/motion";
+import { formatTrDate } from "@/lib/dates";
 import { ArrowRight, Calendar, Clock3, ImageIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -11,17 +12,16 @@ interface NewsPost {
   slug: string;
   excerpt: string;
   coverImage: string | null;
-  publishedAt: Date | null;
-  createdAt: Date;
+  publishedAt: Date | string | null;
+  createdAt: Date | string;
 }
 
 interface NewsPreviewProps {
   posts: NewsPost[];
 }
 
-function formatDate(date: Date | null, fallback: Date) {
-  const d = date ?? fallback;
-  return d.toLocaleDateString("tr-TR", { day: "numeric", month: "long", year: "numeric" });
+function formatDate(date: Date | string | null, fallback: Date | string) {
+  return formatTrDate(date ?? fallback);
 }
 
 export function NewsPreview({ posts }: NewsPreviewProps) {

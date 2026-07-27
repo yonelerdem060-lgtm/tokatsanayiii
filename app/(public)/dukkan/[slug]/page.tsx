@@ -2,6 +2,11 @@ import { getShopBySlug } from "@/actions/shops";
 import { FavoriteButton } from "@/components/public/favorite-button";
 import { ShopContactActions } from "@/components/public/shop-contact-actions";
 import { ShopViewTracker } from "@/components/public/shop-view-tracker";
+import {
+  JsonLd,
+  buildBreadcrumbSchema,
+  buildShopLocalBusinessSchema,
+} from "@/components/seo/json-ld";
 import { Badge } from "@/components/ui/badge";
 import {
   ArrowLeft,
@@ -31,13 +36,25 @@ export async function generateMetadata({ params }: ShopDetailPageProps): Promise
   const { slug } = await params;
   const result = await getShopBySlug(slug);
   if (!result.success) return { title: "Dükkân Bulunamadı" };
+  const shop = result.data;
+  const description =
+    shop.description ??
+    `${shop.name} — Tokat Sanayi Sitesi. ${shop.address}. Telefon: ${shop.phone}`;
   return {
-    title: `${result.data.name} | Tokat Sanayi Sitesi`,
-    description: result.data.description ?? `${result.data.name} — ${result.data.address}`,
+    title: shop.name,
+    description,
+    alternates: { canonical: `/dukkan/${shop.slug}` },
     openGraph: {
-      title: result.data.name,
-      description: result.data.description ?? result.data.address,
-      images: result.data.image ? [{ url: result.data.image }] : undefined,
+      title: `${shop.name} | Tokat Sanayi Sitesi`,
+      description,
+      url: `/dukkan/${shop.slug}`,
+      images: shop.image ? [{ url: shop.image }] : undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: shop.name,
+      description,
+      images: shop.image ? [shop.image] : undefined,
     },
   };
 }
@@ -53,6 +70,23 @@ export default async function ShopDetailPage({ params }: ShopDetailPageProps) {
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6 sm:py-10 lg:px-8">
+      <JsonLd
+        data={buildShopLocalBusinessSchema({
+          name: shop.name,
+          slug: shop.slug,
+          description: shop.description,
+          address: shop.address,
+          phone: shop.phone,
+          image: shop.image,
+          workingHours: shop.workingHours,
+        })}
+      />
+      <JsonLd
+        data={buildBreadcrumbSchema([
+          { name: "Anasayfa", path: "/" },
+          { name: shop.name, path: `/dukkan/${shop.slug}` },
+        ])}
+      />
       <ShopViewTracker shopId={shop.id} />
 
       <div className="flex items-center justify-between gap-3">

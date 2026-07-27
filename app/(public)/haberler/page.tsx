@@ -1,16 +1,19 @@
 import { getPublishedNews } from "@/actions/news";
+import { toDate } from "@/lib/dates";
 import Link from "next/link";
 import { Calendar, ImageIcon } from "lucide-react";
 import Image from "next/image";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Haberler | Tokat Sanayi Sitesi Rehberi",
-  description: "Tokat Sanayi Sitesi haberleri ve duyuruları",
+  title: "Haberler",
+  description:
+    "Tokat Sanayi Sitesi haberleri, duyuruları ve esnaf bilgilendirmeleri.",
+  alternates: { canonical: "/haberler" },
 };
 
-function formatDate(date: Date | null, fallback: Date) {
-  const d = date ?? fallback;
+function formatDate(date: Date | string | null, fallback: Date | string) {
+  const d = toDate(date ?? fallback);
   return {
     day: d.getDate(),
     month: d.toLocaleDateString("tr-TR", { month: "short" }),

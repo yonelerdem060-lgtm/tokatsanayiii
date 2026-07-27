@@ -56,16 +56,19 @@ export function SiteHeader({
 
       <div className="border-b border-border/70 bg-white/80 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
-          <Link href="/" className="shrink-0 group">
+          <Link href="/" className="shrink-0 group" aria-label={`${config.name} anasayfa`}>
             <p className="text-caption text-[10px] tracking-[0.18em] transition group-hover:opacity-80">
               {config.shortName}
             </p>
-            <h1 className="text-base font-semibold tracking-tight text-slate-900 sm:text-lg">
+            <p className="text-base font-semibold tracking-tight text-slate-900 sm:text-lg">
               {config.name}
-            </h1>
+            </p>
           </Link>
 
-          <nav className="hidden items-center gap-1.5 text-[15px] lg:flex">
+          <nav
+            className="hidden items-center gap-1.5 text-[15px] lg:flex"
+            aria-label="Ana menü"
+          >
             {navLinks.map((link) => (
               <Link
                 key={`${link.href}-${link.label}`}

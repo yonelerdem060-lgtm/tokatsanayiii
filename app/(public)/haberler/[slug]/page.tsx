@@ -1,4 +1,5 @@
 import { getNewsBySlug } from "@/actions/news";
+import { formatTrDate } from "@/lib/dates";
 import Link from "next/link";
 import { ArrowLeft, Calendar } from "lucide-react";
 import Image from "next/image";
@@ -13,9 +14,18 @@ export async function generateMetadata({ params }: NewsDetailPageProps): Promise
   const { slug } = await params;
   const result = await getNewsBySlug(slug);
   if (!result.success) return { title: "Haber Bulunamadı" };
+  const post = result.data;
   return {
-    title: `${result.data.title} | Tokat Sanayi Sitesi`,
-    description: result.data.excerpt,
+    title: post.title,
+    description: post.excerpt,
+    alternates: { canonical: `/haberler/${post.slug}` },
+    openGraph: {
+      title: post.title,
+      description: post.excerpt,
+      url: `/haberler/${post.slug}`,
+      type: "article",
+      images: post.coverImage ? [{ url: post.coverImage }] : undefined,
+    },
   };
 }
 
@@ -26,11 +36,7 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
   if (!result.success) notFound();
 
   const post = result.data;
-  const date = (post.publishedAt ?? post.createdAt).toLocaleDateString("tr-TR", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
+  const date = formatTrDate(post.publishedAt ?? post.createdAt);
 
   return (
     <article className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8">

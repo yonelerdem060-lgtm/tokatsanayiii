@@ -260,6 +260,7 @@ export function FilterBar({
                 <Search className="pointer-events-none absolute left-3.5 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400 sm:h-4 sm:w-4 sm:left-3" />
                 <Input
                   id="rehber-search"
+                  aria-label="Dükkân, hizmet veya usta ara"
                   value={firmQuery}
                   onChange={(event) => {
                     setFirmQuery(event.target.value);

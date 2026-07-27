@@ -9,8 +9,14 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 
 export const metadata: Metadata = {
-  title: "Mobilya & Kereste Bölgesi | Tokat Sanayi Sitesi Rehberi",
+  title: "Mobilya & Kereste Bölgesi",
   description: siteConfig.mobilyaKereste.description,
+  alternates: { canonical: "/mobilya-kereste" },
+  openGraph: {
+    title: "Mobilya & Kereste | Tokat Sanayi Sitesi",
+    description: siteConfig.mobilyaKereste.description,
+    url: "/mobilya-kereste",
+  },
 };
 
 interface MobilyaKerestePageProps {

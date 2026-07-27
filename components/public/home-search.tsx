@@ -137,6 +137,7 @@ export function HomeSearch({
             Hızlı arama
           </p>
           <h2 className="mt-1 text-balance text-xl font-bold tracking-tight text-white sm:text-2xl">
+            <span className="sr-only">Tokat Sanayi Sitesi — </span>
             Ne arıyorsun?
           </h2>
           <p className="mt-1 text-sm text-blue-100/85">

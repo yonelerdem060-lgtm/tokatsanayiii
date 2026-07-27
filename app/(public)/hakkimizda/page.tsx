@@ -4,8 +4,14 @@ import type { Metadata } from "next";
 export async function generateMetadata(): Promise<Metadata> {
   const config = await getResolvedSiteConfig();
   return {
-    title: `Hakkımızda | ${config.shortName}`,
+    title: "Hakkımızda",
     description: config.about,
+    alternates: { canonical: "/hakkimizda" },
+    openGraph: {
+      title: `Hakkımızda | ${config.shortName}`,
+      description: config.about,
+      url: "/hakkimizda",
+    },
   };
 }
 

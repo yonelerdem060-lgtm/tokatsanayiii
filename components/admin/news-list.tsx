@@ -4,9 +4,10 @@ import { deleteNews } from "@/actions/news";
 import { DeleteButton } from "@/components/admin/delete-button";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { adminPath } from "@/lib/admin-path";
+import { formatTrDate } from "@/lib/dates";
 import { ImageIcon, Pencil } from "lucide-react";
 import Image from "next/image";
-import { adminPath } from "@/lib/admin-path";
 import Link from "next/link";
 
 interface NewsItem {
@@ -16,8 +17,8 @@ interface NewsItem {
   excerpt: string;
   coverImage: string | null;
   isPublished: boolean;
-  publishedAt: Date | null;
-  createdAt: Date;
+  publishedAt: Date | string | null;
+  createdAt: Date | string;
 }
 
 export function NewsList({
@@ -79,7 +80,11 @@ export function NewsList({
                   </Badge>
                 </td>
                 <td className="px-4 py-3 text-muted-foreground">
-                  {(item.publishedAt ?? item.createdAt).toLocaleDateString("tr-TR")}
+                  {formatTrDate(item.publishedAt ?? item.createdAt, {
+                    day: "numeric",
+                    month: "numeric",
+                    year: "numeric",
+                  })}
                 </td>
                 <td className="px-4 py-3">
                   <div className="flex justify-end gap-2">

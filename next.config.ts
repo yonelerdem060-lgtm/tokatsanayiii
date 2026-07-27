@@ -34,6 +34,8 @@ const nextConfig: NextConfig = {
     root: process.cwd(),
   },
   images: {
+    // Cloudinary zaten optimize eder; Vercel Image Optimization kapalı
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: "https",
