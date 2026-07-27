@@ -5,8 +5,10 @@ import {
   CATALOG_CATEGORIES,
   CATALOG_VEHICLE_TYPES,
 } from "@/lib/catalog";
+import { resolveDatabaseUrl } from "@/lib/database-url";
 import { slugify } from "@/lib/utils";
 
+process.env.DATABASE_URL = resolveDatabaseUrl();
 const prisma = new PrismaClient();
 
 async function upsertCatalogItems() {

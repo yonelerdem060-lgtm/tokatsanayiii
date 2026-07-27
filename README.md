@@ -80,7 +80,12 @@ Tarayıcıda: [http://localhost:3000](http://localhost:3000)
 
 | Değişken | Zorunlu | Açıklama |
 |----------|---------|----------|
-| `DATABASE_URL` | Evet | MySQL: `mysql://user:pass@host:3306/db` |
+| `MYSQL_HOST` | Evet* | MySQL host (örn. `mt-luca.guzelhosting.com`) |
+| `MYSQL_PORT` | Hayır | Varsayılan `3306` |
+| `MYSQL_USER` | Evet* | MySQL kullanıcı adı |
+| `MYSQL_PASSWORD` | Evet* | MySQL şifresi |
+| `MYSQL_DATABASE` | Evet* | Veritabanı adı |
+| `DATABASE_URL` | Hayır | Tek satır bağlantı (MYSQL_* yerine kullanılabilir) |
 | `AUTH_SECRET` | Evet | NextAuth secret (32+ karakter rastgele) |
 | `NEXTAUTH_URL` | Evet | Site URL (örn. `https://tokatsanayisitesi.com`) |
 | `NEXT_PUBLIC_ADMIN_BASE_PATH` | Hayır | Gizli panel yolu (varsayılan `/yp-tokat-7x9k`) |
@@ -91,6 +96,11 @@ Tarayıcıda: [http://localhost:3000](http://localhost:3000)
 | `RESEND_API_KEY` | Hayır | İletişim formu e-posta bildirimi |
 | `CONTACT_NOTIFY_EMAIL` | Hayır | Bildirim alıcı e-posta |
 | `CONTACT_NOTIFY_FROM` | Hayır | Gönderen adı/e-posta |
+| `CLOUDINARY_CLOUD_NAME` | Evet (prod) | Cloudinary cloud name |
+| `CLOUDINARY_API_KEY` | Evet (prod) | Cloudinary API key |
+| `CLOUDINARY_API_SECRET` | Evet (prod) | Cloudinary API secret |
+
+\* `DATABASE_URL` yoksa `MYSQL_*` zorunlu.
 
 ---
 
@@ -98,10 +108,10 @@ Tarayıcıda: [http://localhost:3000](http://localhost:3000)
 
 1. [Vercel](https://vercel.com) hesabınızla GitHub reposunu bağlayın: `bariscanyonel60/sanaitokattttt`
 2. **Framework Preset:** Next.js (otomatik algılanır)
-3. **Environment Variables** ekleyin:
-   - `DATABASE_URL` → Guzel Hosting MySQL (uzak erişim + 3306 açık olmalı)
-   - `AUTH_SECRET` → güçlü rastgele secret
-   - `NEXTAUTH_URL` → production domain (`https://tokatsanayisitesi.com`)
+3. **Environment Variables** ekleyin (Production + Preview):
+   - `MYSQL_HOST`, `MYSQL_PORT`, `MYSQL_USER`, `MYSQL_PASSWORD`, `MYSQL_DATABASE`
+   - `AUTH_SECRET`, `NEXTAUTH_URL`, `NEXT_PUBLIC_ADMIN_BASE_PATH`
+   - `CLOUDINARY_*`, `RESEND_*` (gerekirse)
 4. Deploy sonrası veritabanını oluşturun:
    ```bash
    npx prisma db push
