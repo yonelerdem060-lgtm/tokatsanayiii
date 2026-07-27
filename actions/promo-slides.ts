@@ -53,6 +53,7 @@ export async function getActivePromoSlides() {
 
 export async function getPromoSlides() {
   try {
+    await requireAdmin();
     const slides = await prisma.promoSlide.findMany({
       orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
     });
@@ -65,6 +66,7 @@ export async function getPromoSlides() {
 
 export async function getPromoSlideById(id: string) {
   try {
+    await requireAdmin();
     const slide = await prisma.promoSlide.findUnique({ where: { id } });
     if (!slide) return failure("Reklam slide bulunamadı.");
     return success(formatPromoSlide(slide));

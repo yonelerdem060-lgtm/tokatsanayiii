@@ -37,6 +37,7 @@ export async function getPublishedNews(limit?: number) {
 
 export async function getNewsPosts() {
   try {
+    await requireNewsEditor();
     const posts = await prisma.newsPost.findMany({
       orderBy: [{ publishedAt: "desc" }, { createdAt: "desc" }],
     });
@@ -58,6 +59,7 @@ export async function getNewsBySlug(slug: string) {
 
 export async function getNewsById(id: string) {
   try {
+    await requireNewsEditor();
     const post = await prisma.newsPost.findUnique({ where: { id } });
     if (!post) return failure("Haber bulunamadı.");
     return success(formatNewsPost(post));

@@ -1,10 +1,11 @@
 import type { NextAuthConfig } from "next-auth";
+import { adminPath } from "@/lib/admin-path";
 
 export const authConfig = {
   secret: process.env.AUTH_SECRET,
   trustHost: true,
   pages: {
-    signIn: "/admin/login",
+    signIn: adminPath("/login"),
   },
   callbacks: {
     authorized() {

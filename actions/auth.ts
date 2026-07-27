@@ -3,6 +3,7 @@
 import bcrypt from "bcryptjs";
 import { AuthError } from "next-auth";
 import { signIn } from "@/auth";
+import { ADMIN_BASE_PATH } from "@/lib/admin-path";
 import { prisma } from "@/lib/db";
 
 export async function loginAction(username: string, password: string) {
@@ -23,7 +24,7 @@ export async function loginAction(username: string, password: string) {
       return { success: false as const, error: "Kullanıcı adı veya şifre hatalı." };
     }
 
-    const redirectTo = user.role === "PRESIDENT" ? "/baskan" : "/admin";
+    const redirectTo = user.role === "PRESIDENT" ? "/baskan" : ADMIN_BASE_PATH;
 
     await signIn("credentials", {
       username: email,

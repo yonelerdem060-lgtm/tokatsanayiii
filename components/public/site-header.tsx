@@ -8,7 +8,7 @@ import { TokatWeatherBadge } from "@/components/public/tokat-weather";
 const navLinks = [
   { href: "/", label: "Anasayfa" },
   { href: "/hakkimizda", label: "Kurumsal" },
-  { href: "/#rehber", label: "Firma Rehberi" },
+  { href: "/#ara", label: "Ara" },
   { href: "/haberler", label: "Haberler" },
   { href: "/iletisim", label: "İletişim" },
 ];
@@ -76,10 +76,10 @@ export function SiteHeader({
               </Link>
             ))}
             <Link
-              href="/#rehber"
+              href="/#ara"
               className="ml-1.5 rounded-[var(--ds-radius-lg)] bg-primary px-4 py-2.5 font-semibold text-primary-foreground shadow-md shadow-blue-600/25 transition hover:-translate-y-0.5 hover:brightness-110"
             >
-              Firma Ara
+              Ara
             </Link>
           </nav>
 

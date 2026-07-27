@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ADMIN_BASE_PATH } from "@/lib/admin-path";
 import { getSession, signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
@@ -14,7 +15,7 @@ interface LoginFormProps {
 }
 
 export function LoginForm({
-  defaultRedirect = "/admin",
+  defaultRedirect = ADMIN_BASE_PATH,
   usernamePlaceholder = "admin",
 }: LoginFormProps) {
   const router = useRouter();
@@ -45,7 +46,11 @@ export function LoginForm({
     const session = await getSession();
     const role = session?.user?.role;
     const redirectTo =
-      role === "PRESIDENT" ? "/baskan" : role === "ADMIN" ? "/admin" : defaultRedirect;
+      role === "PRESIDENT"
+        ? "/baskan"
+        : role === "ADMIN"
+          ? ADMIN_BASE_PATH
+          : defaultRedirect;
 
     router.push(redirectTo);
     router.refresh();

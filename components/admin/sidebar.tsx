@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { adminPath } from "@/lib/admin-path";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -20,15 +21,20 @@ import { signOut } from "next-auth/react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
-  { href: "/admin", label: "Panel", icon: LayoutDashboard, exact: true },
-  { href: "/admin/shops", label: "Dükkanlar", icon: Store },
-  { href: "/admin/promo-slides", label: "Reklam Slider", icon: Megaphone },
-  { href: "/admin/news", label: "Haberler", icon: Newspaper },
-  { href: "/admin/messages", label: "Mesajlar", icon: MessageSquare, badgeKey: "messages" as const },
-  { href: "/admin/categories", label: "Kategoriler", icon: Wrench },
-  { href: "/admin/vehicle-types", label: "Araç Tipleri", icon: Car },
-  { href: "/admin/brands", label: "Markalar", icon: Tag },
-  { href: "/admin/settings", label: "Ayarlar", icon: Settings },
+  { href: adminPath(), label: "Panel", icon: LayoutDashboard, exact: true },
+  { href: adminPath("/shops"), label: "Dükkanlar", icon: Store },
+  { href: adminPath("/promo-slides"), label: "Reklam Slider", icon: Megaphone },
+  { href: adminPath("/news"), label: "Haberler", icon: Newspaper },
+  {
+    href: adminPath("/messages"),
+    label: "Mesajlar",
+    icon: MessageSquare,
+    badgeKey: "messages" as const,
+  },
+  { href: adminPath("/categories"), label: "Kategoriler", icon: Wrench },
+  { href: adminPath("/vehicle-types"), label: "Araç Tipleri", icon: Car },
+  { href: adminPath("/brands"), label: "Markalar", icon: Tag },
+  { href: adminPath("/settings"), label: "Ayarlar", icon: Settings },
 ];
 
 interface AdminSidebarProps {
@@ -52,7 +58,7 @@ export function AdminSidebar({
       )}
     >
       <div className="border-b border-border p-5 pr-12 md:p-6 md:pr-6">
-        <Link href="/admin" className="block" onClick={onNavigate}>
+        <Link href={adminPath()} className="block" onClick={onNavigate}>
           <p className="text-xs font-semibold uppercase tracking-wider text-primary">
             Tokat Sanayi
           </p>
@@ -96,7 +102,7 @@ export function AdminSidebar({
 
       <div className="border-t border-border p-4">
         <Link
-          href="/admin/settings"
+          href={adminPath("/settings")}
           onClick={onNavigate}
           className="mb-2 flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground"
         >
@@ -113,7 +119,7 @@ export function AdminSidebar({
         <Button
           variant="outline"
           className="w-full justify-start"
-          onClick={() => signOut({ callbackUrl: "/admin/login" })}
+          onClick={() => signOut({ callbackUrl: adminPath("/login") })}
         >
           <LogOut className="h-4 w-4" />
           Çıkış Yap

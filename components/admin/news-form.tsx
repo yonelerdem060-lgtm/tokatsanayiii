@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { adminPath } from "@/lib/admin-path";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 
@@ -20,11 +21,12 @@ export interface NewsFormValues {
 
 interface NewsFormProps {
   initialValues?: NewsFormValues;
-  /** Kayıt sonrası yönlendirme (varsayılan: /admin/news) */
+  /** Kayıt sonrası yönlendirme */
   successHref?: string;
 }
 
-export function NewsForm({ initialValues, successHref = "/admin/news" }: NewsFormProps) {
+export function NewsForm({ initialValues, successHref }: NewsFormProps) {
+  const resolvedSuccessHref = successHref ?? adminPath("/news");
   const router = useRouter();
   const isEditing = !!initialValues?.id;
 
@@ -54,7 +56,7 @@ export function NewsForm({ initialValues, successHref = "/admin/news" }: NewsFor
       return;
     }
 
-    router.push(successHref);
+    router.push(resolvedSuccessHref);
     router.refresh();
   }
 

@@ -154,7 +154,7 @@ export function ShopCard({ shop, featured, priority }: ShopCardProps) {
               event.stopPropagation();
               trackShopClick(shop.id, "phone");
             }}
-            className="inline-flex h-11 min-h-11 flex-1 items-center justify-center gap-2 rounded-[var(--ds-radius-lg)] bg-primary px-3 text-sm font-semibold text-primary-foreground shadow-sm transition active:scale-[0.98] hover:brightness-110"
+            className="inline-flex h-12 min-h-12 flex-1 items-center justify-center gap-2 rounded-[var(--ds-radius-lg)] bg-primary px-3 text-sm font-semibold text-primary-foreground shadow-sm transition active:scale-[0.98] hover:brightness-110"
           >
             <Phone className="h-4 w-4" />
             Ara
@@ -168,7 +168,7 @@ export function ShopCard({ shop, featured, priority }: ShopCardProps) {
                 event.stopPropagation();
                 trackShopClick(shop.id, "whatsapp");
               }}
-              className="inline-flex h-11 min-h-11 flex-1 items-center justify-center gap-2 rounded-[var(--ds-radius-lg)] border border-emerald-200 bg-success-soft px-3 text-sm font-semibold text-emerald-800 transition active:scale-[0.98] hover:bg-emerald-100"
+              className="inline-flex h-12 min-h-12 flex-1 items-center justify-center gap-2 rounded-[var(--ds-radius-lg)] border border-emerald-200 bg-success-soft px-3 text-sm font-semibold text-emerald-800 transition active:scale-[0.98] hover:bg-emerald-100"
             >
               <MessageCircle className="h-4 w-4" />
               WhatsApp
@@ -176,7 +176,7 @@ export function ShopCard({ shop, featured, priority }: ShopCardProps) {
           ) : (
             <Link
               href={`/dukkan/${shop.slug}`}
-              className="inline-flex h-11 min-h-11 flex-1 items-center justify-center gap-1 rounded-[var(--ds-radius-lg)] border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-700 transition hover:border-blue-200 hover:bg-primary-soft hover:text-primary"
+              className="inline-flex h-12 min-h-12 flex-1 items-center justify-center gap-1 rounded-[var(--ds-radius-lg)] border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-700 transition hover:border-blue-200 hover:bg-primary-soft hover:text-primary"
             >
               Detay
               <ArrowUpRight className="h-3.5 w-3.5" />

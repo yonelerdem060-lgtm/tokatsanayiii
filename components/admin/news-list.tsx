@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ImageIcon, Pencil } from "lucide-react";
 import Image from "next/image";
+import { adminPath } from "@/lib/admin-path";
 import Link from "next/link";
 
 interface NewsItem {
@@ -21,7 +22,7 @@ interface NewsItem {
 
 export function NewsList({
   items,
-  editHrefPrefix = "/admin/news",
+  editHrefPrefix = adminPath("/news"),
 }: {
   items: NewsItem[];
   /** Düzenle linki öneki — örn. /admin/news veya /baskan/haberler */

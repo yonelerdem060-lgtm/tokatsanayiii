@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
+import { getClientIp } from "@/lib/client-ip";
+import { rateLimit } from "@/lib/rate-limit";
 import { failure, getErrorMessage, success } from "@/lib/utils";
 import { isUploadFolder, saveImage } from "@/lib/uploads";
 
@@ -12,6 +14,15 @@ export async function POST(request: Request, context: RouteContext) {
     const session = await auth();
     if (!session?.user) {
       return NextResponse.json(failure("Yetkisiz erişim."), { status: 401 });
+    }
+
+    const ip = await getClientIp();
+    const userId = session.user.id ?? "unknown";
+    const limited = rateLimit(`upload:${userId}:${ip}`, 40, 60 * 60 * 1000);
+    if (!limited.ok) {
+      return NextResponse.json(failure("Çok fazla yükleme. Lütfen sonra tekrar deneyin."), {
+        status: 429,
+      });
     }
 
     const { folder } = await context.params;

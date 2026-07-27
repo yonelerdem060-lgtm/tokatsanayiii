@@ -2,9 +2,9 @@ export const siteConfig = {
   name: "Tokat Sanayi Sitesi Rehberi",
   shortName: "Tokat Sanayi",
   phone: "0356 212 00 00",
-  email: "info@tokatsanayi.local",
+  email: "info@tokatsanayisitesi.com",
   address: "Tokat Organize Sanayi Sitesi, Tokat",
-  adEmail: "reklam@tokatsanayi.local",
+  adEmail: "reklam@tokatsanayisitesi.com",
   workingHours: {
     weekday: "Hafta İçi: 08:30 – 18:00",
     saturday: "Cumartesi: 08:00 – 13:00",

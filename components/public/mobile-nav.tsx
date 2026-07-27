@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 const links = [
   { href: "/", label: "Anasayfa" },
   { href: "/hakkimizda", label: "Kurumsal" },
-  { href: "/#rehber", label: "Firma Rehberi" },
+  { href: "/#ara", label: "Ara" },
   { href: "/#firmalar", label: "Öne Çıkan Firmalar" },
   { href: "/haberler", label: "Haberler" },
   { href: "/mobilya-kereste", label: "Mobilya / Kereste" },
@@ -70,11 +70,11 @@ export function MobileNav() {
                 </Link>
               ))}
               <Link
-                href="/#rehber"
+                href="/#ara"
                 onClick={() => setOpen(false)}
                 className="mt-1 rounded-[var(--ds-radius-lg)] bg-primary px-3.5 py-3 text-center text-sm font-semibold text-primary-foreground shadow-md shadow-blue-600/25"
               >
-                Firma Ara
+                Ara
               </Link>
               <p className="mt-3 border-t border-border pt-3 text-center text-[11px] text-slate-500">
                 Media:{" "}

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import type { PromoSlide } from "@/lib/promo-slides";
 import { cn } from "@/lib/utils";
 import { Eye, EyeOff, Pencil } from "lucide-react";
+import { adminPath } from "@/lib/admin-path";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
@@ -65,7 +66,7 @@ export function PromoSlideList({ slides }: PromoSlideListProps) {
               </div>
 
               <div className="mt-4 flex flex-wrap gap-2">
-                <Link href={`/admin/promo-slides/${slide.id}/edit`}>
+                <Link href={adminPath(`/promo-slides/${slide.id}/edit`)}>
                   <Button variant="outline" size="sm">
                     <Pencil className="h-4 w-4" />
                     Düzenle

@@ -8,6 +8,8 @@ import { AdCtaBanner } from "@/components/public/ad-cta-banner";
 import { FeaturedShops } from "@/components/public/featured-shops";
 import { DirectoryBrowser } from "@/components/public/directory-browser";
 import { HomeHero } from "@/components/public/home-hero";
+import { HomeSearch } from "@/components/public/home-search";
+import { MobileNeedFinder } from "@/components/public/mobile-need-finder";
 import { NewsPreview } from "@/components/public/news-preview";
 import { ShopGridSkeleton } from "@/components/public/shop-grid";
 import { Reveal } from "@/components/public/motion";
@@ -70,6 +72,29 @@ export default async function HomePage({ searchParams }: HomePageProps) {
         <HomeHero categories={categoryStats} slides={promoSlides} />
       </Suspense>
 
+      <Suspense
+        fallback={
+          <div className="border-b border-border bg-[#1e4b8f] px-4 py-8">
+            <div className="mx-auto h-28 max-w-2xl animate-pulse rounded-2xl bg-white/15" />
+          </div>
+        }
+      >
+        <HomeSearch
+          totalShops={shopPage.total || featuredShops.length}
+          shopNames={[
+            ...shopPage.items.map((shop) => shop.name),
+            ...featuredShops.map((shop) => shop.name),
+          ]}
+          categories={filterOptions.categories}
+          vehicleTypes={filterOptions.vehicleTypes}
+          brands={filterOptions.brands}
+        />
+      </Suspense>
+
+      <Suspense fallback={null}>
+        <MobileNeedFinder />
+      </Suspense>
+
       <WeekFeatured shop={weekShop} />
 
       <FeaturedShops shops={featuredShops} />
@@ -83,9 +108,9 @@ export default async function HomePage({ searchParams }: HomePageProps) {
         className="mx-auto w-full max-w-7xl space-y-5 px-4 py-8 sm:px-6 lg:px-8"
       >
         <Reveal>
-          <h2 className="text-title">Firma rehberi</h2>
+          <h2 className="text-title">Arama sonuçları</h2>
           <p className="mt-1 text-body">
-            Kategori, araç tipi veya markaya göre arayın
+            İstersen kategori, araç tipi veya marka ile daralt
           </p>
         </Reveal>
         <Suspense

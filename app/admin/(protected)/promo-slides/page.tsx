@@ -2,6 +2,7 @@ import { getPromoSlides } from "@/actions/promo-slides";
 import { PromoSlideList } from "@/components/admin/promo-slide-list";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { adminPath } from "@/lib/admin-path";
 import { Plus } from "lucide-react";
 import Link from "next/link";
 
@@ -18,7 +19,7 @@ export default async function AdminPromoSlidesPage() {
             Ana sayfadaki reklam ve duyuru banner&apos;larını yönetin.
           </p>
         </div>
-        <Link href="/admin/promo-slides/new">
+        <Link href={adminPath("/promo-slides/new")}>
           <Button>
             <Plus className="h-4 w-4" />
             Yeni Reklam
@@ -32,7 +33,7 @@ export default async function AdminPromoSlidesPage() {
         <Card>
           <CardContent className="py-12 text-center text-muted-foreground">
             Henüz reklam slide&apos;ı yok.{" "}
-            <Link href="/admin/promo-slides/new" className="text-primary hover:underline">
+            <Link href={adminPath("/promo-slides/new")} className="text-primary hover:underline">
               İlk reklamı ekleyin
             </Link>
           </CardContent>

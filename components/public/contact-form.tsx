@@ -1,22 +1,37 @@
 "use client";
 
 import { submitContactForm } from "@/actions/contact";
+import { TurnstileWidget } from "@/components/public/turnstile-widget";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { CheckCircle } from "lucide-react";
-import { FormEvent, useState } from "react";
+import { FormEvent, useCallback, useState } from "react";
+
+const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY?.trim() || "";
 
 export function ContactForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [formStartedAt] = useState(() => Date.now());
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+
+  const handleTurnstileToken = useCallback((token: string | null) => {
+    setTurnstileToken(token);
+  }, []);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setLoading(true);
     setError(null);
+
+    if (TURNSTILE_SITE_KEY && !turnstileToken) {
+      setLoading(false);
+      setError("Lütfen güvenlik doğrulamasını tamamlayın.");
+      return;
+    }
 
     const formData = new FormData(event.currentTarget);
     const payload = {
@@ -26,6 +41,8 @@ export function ContactForm() {
       subject: String(formData.get("subject") ?? ""),
       message: String(formData.get("message") ?? ""),
       website: String(formData.get("website") ?? ""),
+      formStartedAt,
+      turnstileToken: turnstileToken || undefined,
     };
 
     const result = await submitContactForm(payload);
@@ -37,6 +54,7 @@ export function ContactForm() {
     }
 
     setSuccess(true);
+    setTurnstileToken(null);
     event.currentTarget.reset();
   }
 
@@ -86,6 +104,9 @@ export function ContactForm() {
         <Label htmlFor="website">Website</Label>
         <Input id="website" name="website" tabIndex={-1} autoComplete="off" />
       </div>
+      {TURNSTILE_SITE_KEY ? (
+        <TurnstileWidget siteKey={TURNSTILE_SITE_KEY} onToken={handleTurnstileToken} />
+      ) : null}
       {error && <p className="text-sm text-red-600">{error}</p>}
       <Button type="submit" disabled={loading}>
         {loading ? "Gönderiliyor..." : "Mesaj Gönder"}

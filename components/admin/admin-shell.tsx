@@ -2,6 +2,7 @@
 
 import { AdminSidebar } from "@/components/admin/sidebar";
 import { Button } from "@/components/ui/button";
+import { adminPath } from "@/lib/admin-path";
 import { cn } from "@/lib/utils";
 import { Menu, X } from "lucide-react";
 import Link from "next/link";
@@ -90,7 +91,7 @@ export function AdminShell({ unreadMessages = 0, children }: AdminShellProps) {
             <Menu className="h-4 w-4" />
             <span>Menü</span>
           </Button>
-          <Link href="/admin" className="min-w-0 flex-1">
+          <Link href={adminPath()} className="min-w-0 flex-1">
             <p className="truncate text-xs font-semibold uppercase tracking-wider text-primary">
               Tokat Sanayi
             </p>
@@ -98,7 +99,7 @@ export function AdminShell({ unreadMessages = 0, children }: AdminShellProps) {
           </Link>
           {unreadMessages > 0 ? (
             <Link
-              href="/admin/messages"
+              href={adminPath("/messages")}
               className={cn(
                 "rounded-full bg-primary px-2.5 py-1 text-[11px] font-semibold tabular-nums text-primary-foreground",
               )}

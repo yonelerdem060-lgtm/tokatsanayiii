@@ -7,7 +7,7 @@ const footerLinks = [
   { href: "/hakkimizda", label: "Hakkımızda" },
   { href: "/haberler", label: "Haberler" },
   { href: "/iletisim", label: "İletişim" },
-  { href: "/", label: "Firma Ara" },
+  { href: "/#ara", label: "Ara" },
 ];
 
 export function SiteFooter({ config }: { config: ResolvedSiteConfig }) {

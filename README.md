@@ -68,8 +68,8 @@ Tarayıcıda: [http://localhost:3000](http://localhost:3000)
 
 | Alan | Değer |
 |------|-------|
-| URL | `/admin/login` |
-| E-posta | `admin@sanayi.local` |
+| URL | `/yp-tokat-7x9k/login` (gizli yol; `/admin` kapalı) |
+| Kullanıcı | `admin` |
 | Şifre | `admin123` |
 
 > Production ortamında seed şifresini mutlaka değiştirin.
@@ -80,11 +80,14 @@ Tarayıcıda: [http://localhost:3000](http://localhost:3000)
 
 | Değişken | Zorunlu | Açıklama |
 |----------|---------|----------|
-| `DATABASE_URL` | Evet | SQLite: `file:./dev.db` — Vercel/Prod: PostgreSQL connection string |
+| `DATABASE_URL` | Evet | MySQL: `mysql://user:pass@host:3306/db` |
 | `AUTH_SECRET` | Evet | NextAuth secret (32+ karakter rastgele) |
-| `NEXTAUTH_URL` | Evet | Site URL (örn. `https://alanadiniz.vercel.app`) |
+| `NEXTAUTH_URL` | Evet | Site URL (örn. `https://tokatsanayisitesi.com`) |
+| `NEXT_PUBLIC_ADMIN_BASE_PATH` | Hayır | Gizli panel yolu (varsayılan `/yp-tokat-7x9k`) |
 | `ADMIN_USERNAME` | Hayır | Seed script admin kullanıcı adı |
 | `ADMIN_PASSWORD` | Hayır | Seed script admin şifresi |
+| `PRESIDENT_USERNAME` | Hayır | Başkan paneli kullanıcı adı |
+| `PRESIDENT_PASSWORD` | Hayır | Başkan paneli şifresi |
 | `RESEND_API_KEY` | Hayır | İletişim formu e-posta bildirimi |
 | `CONTACT_NOTIFY_EMAIL` | Hayır | Bildirim alıcı e-posta |
 | `CONTACT_NOTIFY_FROM` | Hayır | Gönderen adı/e-posta |
@@ -96,19 +99,21 @@ Tarayıcıda: [http://localhost:3000](http://localhost:3000)
 1. [Vercel](https://vercel.com) hesabınızla GitHub reposunu bağlayın: `bariscanyonel60/sanaitokattttt`
 2. **Framework Preset:** Next.js (otomatik algılanır)
 3. **Environment Variables** ekleyin:
-   - `DATABASE_URL` → Vercel Postgres veya harici PostgreSQL URL
+   - `DATABASE_URL` → Guzel Hosting MySQL (uzak erişim + 3306 açık olmalı)
    - `AUTH_SECRET` → güçlü rastgele secret
-   - `NEXTAUTH_URL` → production domain (örn. `https://xxx.vercel.app`)
+   - `NEXTAUTH_URL` → production domain (`https://tokatsanayisitesi.com`)
 4. Deploy sonrası veritabanını oluşturun:
    ```bash
    npx prisma db push
-   npx prisma db seed
+   npm run db:seed
    ```
-   Vercel CLI veya geçici bir migration script ile production DB'ye uygulayın.
 
 ### Production veritabanı notu
 
-Yerel geliştirmede SQLite kullanılır. Vercel gibi serverless ortamlarda **PostgreSQL** (Vercel Postgres, Neon, Supabase vb.) kullanın. `prisma/schema.prisma` içindeki `provider` değerini `postgresql` yapıp `DATABASE_URL`'i güncelleyin.
+Proje **MySQL** kullanır (Guzel Hosting cPanel). Yerelden bağlanmak için:
+1. cPanel → Remote Database Access → IP veya `%`
+2. Hosting firewall’da **3306** portunun açık olması gerekir (çoğu paylaşımlı hosting kapalı tutar — destekten isteyin)
+3. Alternatif: `prisma/mysql-init.sql` dosyasını phpMyAdmin → İçe Aktar ile çalıştırın
 
 ### Görsel yükleme
 

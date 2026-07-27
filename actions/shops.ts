@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/admin";
 import { prisma } from "@/lib/db";
 import { SHOPS_PAGE_SIZE, getTotalPages } from "@/lib/pagination";
+import { expandSearchTerms } from "@/lib/smart-search";
 import { deleteUploadedFile } from "@/lib/uploads";
 import { failure, getErrorMessage, slugify, success } from "@/lib/utils";
 import { shopFilterSchema, shopSchema } from "@/lib/validations";
@@ -91,6 +92,24 @@ function buildShopWhere(filters: {
   q?: string;
 }): Prisma.ShopWhereInput {
   const query = filters.q?.trim();
+  const terms = query ? expandSearchTerms(query) : [];
+
+  const textOr: Prisma.ShopWhereInput[] = terms.flatMap((term) => [
+    { name: { contains: term } },
+    { phone: { contains: term } },
+    { address: { contains: term } },
+    { description: { contains: term } },
+    { whatsapp: { contains: term } },
+  ]);
+
+  const taxonomyOr: Prisma.ShopWhereInput[] = terms.flatMap((term) => [
+    { categories: { some: { category: { name: { contains: term } } } } },
+    { categories: { some: { category: { slug: { contains: slugify(term) } } } } },
+    { vehicleTypes: { some: { vehicleType: { name: { contains: term } } } } },
+    { vehicleTypes: { some: { vehicleType: { slug: { contains: slugify(term) } } } } },
+    { brands: { some: { brand: { name: { contains: term } } } } },
+    { brands: { some: { brand: { slug: { contains: slugify(term) } } } } },
+  ]);
 
   return {
     AND: [
@@ -101,15 +120,9 @@ function buildShopWhere(filters: {
         ? { vehicleTypes: { some: { vehicleType: { slug: filters.vehicleType } } } }
         : {},
       filters.brand ? { brands: { some: { brand: { slug: filters.brand } } } } : {},
-      query
+      terms.length > 0
         ? {
-            OR: [
-              { name: { contains: query } },
-              { phone: { contains: query } },
-              { address: { contains: query } },
-              { description: { contains: query } },
-              { whatsapp: { contains: query } },
-            ],
+            OR: [...textOr, ...taxonomyOr],
           }
         : {},
     ],
@@ -206,6 +219,7 @@ export async function getShopsByCategorySlugs(
       : [...categorySlugs];
 
     const query = filters?.q?.trim();
+    const terms = query ? expandSearchTerms(query) : [];
     const take = filters?.pageSize ?? SHOPS_PAGE_SIZE;
     const currentPage = filters?.page ?? 1;
     const where: Prisma.ShopWhereInput = {
@@ -217,13 +231,16 @@ export async function getShopsByCategorySlugs(
             },
           },
         },
-        query
+        terms.length > 0
           ? {
               OR: [
-                { name: { contains: query } },
-                { phone: { contains: query } },
-                { address: { contains: query } },
-                { description: { contains: query } },
+                ...terms.flatMap((term) => [
+                  { name: { contains: term } },
+                  { phone: { contains: term } },
+                  { address: { contains: term } },
+                  { description: { contains: term } },
+                  { categories: { some: { category: { name: { contains: term } } } } },
+                ]),
               ],
             }
           : {},

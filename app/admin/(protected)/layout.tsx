@@ -1,6 +1,7 @@
 import { AdminShell } from "@/components/admin/admin-shell";
 import { getUnreadMessageCount } from "@/actions/contact";
 import { auth } from "@/auth";
+import { adminPath } from "@/lib/admin-path";
 import { redirect } from "next/navigation";
 
 export default async function ProtectedAdminLayout({
@@ -11,7 +12,7 @@ export default async function ProtectedAdminLayout({
   const session = await auth();
 
   if (!session?.user) {
-    redirect("/admin/login");
+    redirect(adminPath("/login"));
   }
 
   const unreadResult = await getUnreadMessageCount();

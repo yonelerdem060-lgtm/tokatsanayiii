@@ -1,12 +1,12 @@
 // Tokat Sanayi Sitesi Rehberi — Veritabanı Şeması
-// SQLite (yerel geliştirme) / PostgreSQL (production) + Prisma ORM
+// MySQL (Guzel Hosting)
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
@@ -18,13 +18,13 @@ model Shop {
   id               String   @id @default(cuid())
   name             String
   slug             String   @unique
-  description      String?
-  address          String
+  description      String?  @db.Text 
+  address          String  
   phone            String
   whatsapp         String?
-  workingHours     String?
-  mapUrl           String?
-  image            String?
+  workingHours     String?  @db.Text 
+  mapUrl           String?  @db.Text 
+  image            String? 
   isFeatured       Boolean  @default(false)
   featuredSortOrder Int     @default(0)
   isShopOfWeek     Boolean  @default(false)
@@ -45,7 +45,7 @@ model Shop {
 model ShopImage {
   id        String   @id @default(cuid())
   shopId    String
-  url       String
+  url       String  
   sortOrder Int      @default(0)
   createdAt DateTime @default(now())
 
@@ -61,14 +61,14 @@ model SiteSettings {
   shortName   String
   phone       String
   email       String
-  address     String
+  address     String  
   adEmail     String
   weekdayHours String
   saturdayHours String
   sundayHours String
-  about       String
-  aboutParagraphs String // JSON string array
-  aboutStats  String // JSON [{label,value}]
+  about       String  
+  aboutParagraphs String @db.Text // JSON string array
+  aboutStats  String   @db.Text   // JSON [{label,value}]
   updatedAt   DateTime @updatedAt
   createdAt   DateTime @default(now())
 
@@ -157,12 +157,12 @@ model PromoSlide {
   id          String   @id @default(cuid())
   badge       String   // Reklam, Sponsorlu, Duyuru, Kampanya
   title       String
-  subtitle    String
-  description String
+  subtitle    String  
+  description String  
   ctaText     String
-  ctaHref     String
-  image       String?
-  gradient    String   // Tailwind gradient sınıfları
+  ctaHref     String  
+  image       String? 
+  gradient    String   @db.Text // Tailwind gradient sınıfları
   accent      String   // Tailwind text rengi sınıfı
   sortOrder   Int      @default(0)
   isActive    Boolean  @default(true)
@@ -180,9 +180,9 @@ model NewsPost {
   id          String    @id @default(cuid())
   title       String
   slug        String    @unique
-  excerpt     String
-  content     String
-  coverImage  String?
+  excerpt     String  
+  content     String  
+  coverImage  String?  @db.Text 
   isPublished Boolean   @default(false)
   publishedAt DateTime?
   createdAt   DateTime  @default(now())
@@ -201,7 +201,7 @@ model ContactMessage {
   email     String
   phone     String?
   subject   String
-  message   String
+  message   String  
   isRead    Boolean  @default(false)
   createdAt DateTime @default(now())
 
@@ -236,12 +236,12 @@ model Account {
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String?
-  access_token      String?
+  refresh_token     String?  @db.Text 
+  access_token      String?  @db.Text 
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String?
+  id_token          String?  @db.Text 
   session_state     String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)

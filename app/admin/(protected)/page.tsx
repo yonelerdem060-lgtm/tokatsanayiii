@@ -6,6 +6,7 @@ import { getPromoSlides } from "@/actions/promo-slides";
 import { getShops } from "@/actions/shops";
 import { getVehicleTypes } from "@/actions/vehicle-types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { adminPath } from "@/lib/admin-path";
 import { Car, Megaphone, MessageSquare, Newspaper, Store, Tag, Wrench } from "lucide-react";
 import Link from "next/link";
 
@@ -25,43 +26,43 @@ export default async function AdminDashboardPage() {
     {
       label: "Dükkanlar",
       value: shopsResult.success ? shopsResult.data.total : 0,
-      href: "/admin/shops",
+      href: adminPath("/shops"),
       icon: Store,
     },
     {
       label: "Reklamlar",
       value: promoResult.success ? promoResult.data.length : 0,
-      href: "/admin/promo-slides",
+      href: adminPath("/promo-slides"),
       icon: Megaphone,
     },
     {
       label: "Haberler",
       value: newsResult.success ? newsResult.data.length : 0,
-      href: "/admin/news",
+      href: adminPath("/news"),
       icon: Newspaper,
     },
     {
       label: "Mesajlar",
       value: unreadResult.success ? unreadResult.data : 0,
-      href: "/admin/messages",
+      href: adminPath("/messages"),
       icon: MessageSquare,
     },
     {
       label: "Kategoriler",
       value: categoriesResult.success ? categoriesResult.data.length : 0,
-      href: "/admin/categories",
+      href: adminPath("/categories"),
       icon: Wrench,
     },
     {
       label: "Araç Tipleri",
       value: vehicleTypesResult.success ? vehicleTypesResult.data.length : 0,
-      href: "/admin/vehicle-types",
+      href: adminPath("/vehicle-types"),
       icon: Car,
     },
     {
       label: "Markalar",
       value: brandsResult.success ? brandsResult.data.length : 0,
-      href: "/admin/brands",
+      href: adminPath("/brands"),
       icon: Tag,
     },
   ];

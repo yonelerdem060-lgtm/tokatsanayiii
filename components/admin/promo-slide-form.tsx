@@ -14,6 +14,7 @@ import {
   GRADIENT_PRESETS,
   type PromoSlide,
 } from "@/lib/promo-slides";
+import { adminPath } from "@/lib/admin-path";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -93,7 +94,7 @@ export function PromoSlideForm({ initialValues }: PromoSlideFormProps) {
       return;
     }
 
-    router.push("/admin/promo-slides");
+    router.push(adminPath("/promo-slides"));
     router.refresh();
   }
 

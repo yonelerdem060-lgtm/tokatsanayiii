@@ -77,15 +77,15 @@ export function HomeHero({ categories, slides }: HomeHeroProps) {
   );
 
   return (
-    <section className="border-b border-border bg-surface py-4 sm:py-5">
-      <div className="mx-auto grid max-w-[92rem] items-start gap-4 px-3 sm:px-5 lg:grid-cols-[220px_minmax(0,1fr)] lg:gap-5 lg:px-6 xl:grid-cols-[240px_minmax(0,1fr)] xl:px-8">
-        {/* Sol (masaüstü) / Alt (mobil): Kategori */}
-        <aside className="order-2 overflow-hidden rounded-[var(--ds-radius-md)] border border-border bg-white shadow-[var(--ds-shadow-soft)] lg:order-1">
+    <section className="border-b border-border bg-surface py-3 sm:py-5">
+      <div className="mx-auto grid max-w-[92rem] items-start gap-3 px-3 sm:gap-4 sm:px-5 lg:grid-cols-[220px_minmax(0,1fr)] lg:gap-5 lg:px-6 xl:grid-cols-[240px_minmax(0,1fr)] xl:px-8">
+        {/* Masaüstü: dikey kategori listesi */}
+        <aside className="order-2 hidden overflow-hidden rounded-[var(--ds-radius-md)] border border-border bg-white shadow-[var(--ds-shadow-soft)] lg:order-1 lg:block">
           <div className="relative flex items-center justify-between border-b border-border bg-white px-4 py-3">
             <h2 className="text-caption tracking-[0.14em]">Kategori Ara</h2>
             <span className="absolute right-0 top-0 h-full w-1 bg-primary" aria-hidden />
           </div>
-          <div className="max-h-[280px] overflow-y-auto overscroll-contain sm:max-h-[320px] lg:max-h-[440px]">
+          <div className="max-h-[440px] overflow-y-auto overscroll-contain">
             {sortedCategories.length === 0 ? (
               <p className="px-4 py-8 text-center text-sm text-muted-foreground">
                 Henüz kategori yok
@@ -133,14 +133,15 @@ export function HomeHero({ categories, slides }: HomeHeroProps) {
         </aside>
 
         {/* Sağ (masaüstü) / Üst (mobil): Carousel — 1920×860 oranı */}
-        <div
-          className={cn(
-            "relative order-1 w-full min-w-0 overflow-hidden rounded-[var(--ds-radius-md)] border border-border bg-slate-900 shadow-[var(--ds-shadow-soft)] lg:order-2",
-            SLIDE_FRAME,
-          )}
-          onMouseEnter={() => setPaused(true)}
-          onMouseLeave={() => setPaused(false)}
-        >
+        <div className="order-1 min-w-0 space-y-3 lg:order-2">
+          <div
+            className={cn(
+              "relative w-full overflow-hidden rounded-[var(--ds-radius-md)] border border-border bg-slate-900 shadow-[var(--ds-shadow-soft)]",
+              SLIDE_FRAME,
+            )}
+            onMouseEnter={() => setPaused(true)}
+            onMouseLeave={() => setPaused(false)}
+          >
           {slideCount === 0 ? (
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-slate-400">
               <ImageIcon className="h-10 w-10 opacity-40" />
@@ -261,6 +262,44 @@ export function HomeHero({ categories, slides }: HomeHeroProps) {
                 </>
               )}
             </>
+          )}
+          </div>
+
+          {/* Mobil: yatay kaydırmalı kategoriler */}
+          {sortedCategories.length > 0 && (
+            <div className="lg:hidden">
+              <p className="mb-2 px-0.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+                Kategoriler
+              </p>
+              <div className="hide-scrollbar -mx-3 flex gap-2 overflow-x-auto px-3 pb-1">
+                {sortedCategories.map((category) => {
+                  const isActive = activeCategory === category.slug;
+                  return (
+                    <button
+                      key={category.id}
+                      type="button"
+                      onClick={() => selectCategory(category.slug)}
+                      className={cn(
+                        "shrink-0 rounded-full border px-3.5 py-2 text-sm font-semibold transition active:scale-[0.98]",
+                        isActive
+                          ? "border-primary bg-primary text-primary-foreground"
+                          : "border-border bg-white text-slate-700",
+                      )}
+                    >
+                      {category.name}
+                      <span
+                        className={cn(
+                          "ml-1.5 tabular-nums text-[11px]",
+                          isActive ? "text-white/80" : "text-slate-400",
+                        )}
+                      >
+                        {category.count}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
           )}
         </div>
       </div>

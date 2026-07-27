@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Pagination } from "@/components/ui/pagination";
 import { ADMIN_SHOPS_PAGE_SIZE, parsePage } from "@/lib/pagination";
+import { adminPath } from "@/lib/admin-path";
 import { ImageIcon, Pencil, Plus, Search } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -34,7 +35,7 @@ export default async function AdminShopsPage({ searchParams }: AdminShopsPagePro
             Sanayi sitesindeki dükkanları yönetin. Toplam {shopPage.total} kayıt.
           </p>
         </div>
-        <Link href="/admin/shops/new">
+        <Link href={adminPath("/shops/new")}>
           <Button>
             <Plus className="h-4 w-4" />
             Yeni Dükkan
@@ -56,7 +57,7 @@ export default async function AdminShopsPage({ searchParams }: AdminShopsPagePro
           Ara
         </Button>
         {q && (
-          <Link href="/admin/shops">
+          <Link href={adminPath("/shops")}>
             <Button type="button" variant="ghost">
               Temizle
             </Button>
@@ -74,7 +75,7 @@ export default async function AdminShopsPage({ searchParams }: AdminShopsPagePro
             ) : (
               <>
                 Henüz dükkan eklenmemiş.{" "}
-                <Link href="/admin/shops/new" className="text-primary hover:underline">
+                <Link href={adminPath("/shops/new")} className="text-primary hover:underline">
                   İlk dükkanı ekleyin
                 </Link>
               </>
@@ -127,7 +128,7 @@ export default async function AdminShopsPage({ searchParams }: AdminShopsPagePro
                       Görüntüle
                     </Button>
                   </Link>
-                  <Link href={`/admin/shops/${shop.id}/edit`}>
+                  <Link href={adminPath(`/shops/${shop.id}/edit`)}>
                     <Button variant="outline" size="sm">
                       <Pencil className="h-4 w-4" />
                       Düzenle
@@ -135,8 +136,7 @@ export default async function AdminShopsPage({ searchParams }: AdminShopsPagePro
                   </Link>
                   <ShopDeleteButton shopId={shop.id} />
                 </div>
-              </CardHeader>
-              <CardContent>
+              </CardHeader>              <CardContent>
                 <div className="flex flex-wrap gap-2">
                   {shop.categories.map((category) => (
                     <Badge key={category.id} className="bg-blue-50 text-blue-700">

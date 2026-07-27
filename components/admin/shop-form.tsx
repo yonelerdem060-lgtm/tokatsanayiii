@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { MultiSelect, MultiSelectOption } from "@/components/ui/multi-select";
 import { Textarea } from "@/components/ui/textarea";
+import { adminPath } from "@/lib/admin-path";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 
@@ -107,7 +108,7 @@ export function ShopForm({
       return;
     }
 
-    router.push("/admin/shops");
+    router.push(adminPath("/shops"));
     router.refresh();
   }
 

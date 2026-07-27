@@ -2,6 +2,12 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  buildSmartSuggestions,
+  POPULAR_QUERIES,
+  smartSuggestionKindLabel,
+  type SmartSuggestion,
+} from "@/lib/smart-search";
 import { cn } from "@/lib/utils";
 import {
   Building2,
@@ -42,8 +48,6 @@ interface FilterBarProps {
 }
 
 type FilterKey = "category" | "vehicleType" | "brand";
-
-const POPULAR_SEARCHES = ["lastik", "motor", "klima", "egzoz", "fren", "yağ"];
 
 export function FilterBar({
   categories,
@@ -124,6 +128,41 @@ export function FilterBar({
     updateParams({ q: trimmed || null });
   }
 
+  function applySuggestion(item: SmartSuggestion) {
+    setSuggestOpen(false);
+    if (item.kind === "category" && item.category) {
+      setFirmQuery("");
+      updateParams({
+        q: null,
+        category: item.category,
+        vehicleType: null,
+        brand: null,
+      });
+      return;
+    }
+    if (item.kind === "vehicleType" && item.vehicleType) {
+      setFirmQuery("");
+      updateParams({
+        q: null,
+        vehicleType: item.vehicleType,
+        category: null,
+        brand: null,
+      });
+      return;
+    }
+    if (item.kind === "brand" && item.brand) {
+      setFirmQuery("");
+      updateParams({
+        q: null,
+        brand: item.brand,
+        category: null,
+        vehicleType: null,
+      });
+      return;
+    }
+    applySearch(item.q ?? item.label);
+  }
+
   function handleSearch(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     applySearch(firmQuery);
@@ -138,23 +177,18 @@ export function FilterBar({
     setSuggestOpen(false);
   }
 
-  const catalogSuggestions = useMemo(() => {
-    const fromFilters = [
-      ...categories.map((item) => item.name),
-      ...brands.map((item) => item.name),
-      ...vehicleTypes.map((item) => item.name),
-    ];
-    return Array.from(new Set([...suggestions, ...fromFilters]));
-  }, [suggestions, categories, brands, vehicleTypes]);
-
-  const filteredSuggestions = useMemo(() => {
-    const query = firmQuery.trim().toLocaleLowerCase("tr");
-    if (query.length < 1) return [];
-    return catalogSuggestions
-      .filter((item) => item.toLocaleLowerCase("tr").includes(query))
-      .filter((item) => item.toLocaleLowerCase("tr") !== query)
-      .slice(0, 8);
-  }, [firmQuery, catalogSuggestions]);
+  const smartSuggestions = useMemo(
+    () =>
+      buildSmartSuggestions({
+        query: firmQuery,
+        shopNames: suggestions,
+        categoryOptions: categories,
+        vehicleOptions: vehicleTypes,
+        brandOptions: brands,
+        limit: 10,
+      }),
+    [firmQuery, suggestions, categories, vehicleTypes, brands],
+  );
 
   const selectedCategoryName = categories.find((item) => item.slug === selectedCategory)?.name;
   const selectedVehicleName = vehicleTypes.find((item) => item.slug === selectedVehicleType)?.name;
@@ -223,44 +257,50 @@ export function FilterBar({
           <div className="flex gap-2">
             <div ref={searchWrapRef} className="relative min-w-0 flex-1">
               <form onSubmit={handleSearch} className="relative">
-                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                <Search className="pointer-events-none absolute left-3.5 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400 sm:h-4 sm:w-4 sm:left-3" />
                 <Input
+                  id="rehber-search"
                   value={firmQuery}
                   onChange={(event) => {
                     setFirmQuery(event.target.value);
                     setSuggestOpen(true);
                   }}
                   onFocus={() => setSuggestOpen(true)}
-                  placeholder="Firma, telefon veya adres..."
+                  placeholder="Ara: lastik, klima, kaporta, dükkan adı..."
                   enterKeyHint="search"
                   autoComplete="off"
-                  className="h-12 rounded-[var(--ds-radius-lg)] border-slate-200 bg-slate-50/90 pl-10 pr-16 text-base sm:text-sm"
+                  className="h-14 rounded-[var(--ds-radius-lg)] border-slate-200 bg-slate-50/90 pl-11 pr-20 text-base font-medium shadow-inner sm:h-12 sm:text-sm"
                 />
                 <Button
                   type="submit"
                   size="sm"
                   variant="primary"
-                  className="absolute right-1.5 top-1/2 h-9 -translate-y-1/2 rounded-[var(--ds-radius-md)] px-3"
+                  className="absolute right-1.5 top-1/2 h-11 -translate-y-1/2 rounded-[var(--ds-radius-md)] px-4 text-sm font-bold sm:h-9 sm:px-3"
                 >
                   Ara
                 </Button>
               </form>
 
-              {suggestOpen && filteredSuggestions.length > 0 && (
+              {suggestOpen && smartSuggestions.length > 0 && (
                 <ul
                   role="listbox"
-                  className="absolute left-0 right-0 top-[calc(100%+6px)] z-40 overflow-hidden rounded-[var(--ds-radius-lg)] border border-border bg-white shadow-[var(--ds-shadow-lift)]"
+                  className="absolute left-0 right-0 top-[calc(100%+6px)] z-40 max-h-72 overflow-auto rounded-[var(--ds-radius-lg)] border border-border bg-white shadow-[var(--ds-shadow-lift)]"
                 >
-                  {filteredSuggestions.map((item) => (
-                    <li key={item}>
+                  {smartSuggestions.map((item) => (
+                    <li
+                      key={`${item.kind}-${item.category ?? ""}-${item.vehicleType ?? ""}-${item.brand ?? ""}-${item.label}`}
+                    >
                       <button
                         type="button"
                         role="option"
                         className="flex w-full items-center gap-2 px-3 py-2.5 text-left text-sm text-slate-700 transition hover:bg-primary-soft hover:text-primary"
-                        onClick={() => applySearch(item)}
+                        onClick={() => applySuggestion(item)}
                       >
                         <Search className="h-3.5 w-3.5 shrink-0 text-slate-400" />
-                        <span className="truncate">{item}</span>
+                        <span className="min-w-0 flex-1 truncate font-medium">{item.label}</span>
+                        <span className="shrink-0 rounded-full bg-muted px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+                          {smartSuggestionKindLabel(item.kind)}
+                        </span>
                       </button>
                     </li>
                   ))}
@@ -275,7 +315,7 @@ export function FilterBar({
                 setOptionQuery("");
               }}
               className={cn(
-                "relative inline-flex h-12 shrink-0 items-center gap-2 rounded-[var(--ds-radius-lg)] border px-3.5 text-sm font-semibold transition md:hidden",
+                "relative inline-flex h-14 shrink-0 items-center gap-2 rounded-[var(--ds-radius-lg)] border px-3.5 text-sm font-semibold transition md:hidden sm:h-12",
                 activeCount > 0
                   ? "border-blue-200 bg-primary-soft text-primary"
                   : "border-slate-200 bg-white text-slate-700",
@@ -296,8 +336,8 @@ export function FilterBar({
             <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
               Popüler
             </span>
-            {POPULAR_SEARCHES.map((term) => {
-              const active = selectedQuery.toLocaleLowerCase("tr") === term;
+            {POPULAR_QUERIES.slice(0, 8).map((term) => {
+              const active = selectedQuery.toLocaleLowerCase("tr") === term.toLocaleLowerCase("tr");
               return (
                 <button
                   key={term}

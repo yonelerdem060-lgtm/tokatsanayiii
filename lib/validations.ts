@@ -1,5 +1,18 @@
 import { z } from "zod";
 
+function isSafeHref(value: string) {
+  const trimmed = value.trim();
+  if (!trimmed) return false;
+  // Site içi göreli yol
+  if (trimmed.startsWith("/") && !trimmed.startsWith("//")) return true;
+  try {
+    const url = new URL(trimmed);
+    return ["http:", "https:", "mailto:", "tel:"].includes(url.protocol);
+  } catch {
+    return false;
+  }
+}
+
 const optionalUrl = z
   .string()
   .max(500)
@@ -8,6 +21,9 @@ const optionalUrl = z
   .transform((value) => {
     const trimmed = value?.trim();
     return trimmed ? trimmed : null;
+  })
+  .refine((value) => value === null || isSafeHref(value), {
+    message: "Geçerli bir http(s), mailto, tel veya site içi link girin.",
   });
 
 const optionalText = z
@@ -33,7 +49,7 @@ export const shopSchema = z.object({
   workingHours: optionalText,
   mapUrl: optionalUrl,
   image: optionalUrl,
-  gallery: z.array(z.string().min(1).max(500)).max(12).default([]),
+  gallery: z.array(z.string().min(1).max(500).refine(isSafeHref)).max(12).default([]),
   categoryIds: z.array(z.string()).default([]),
   vehicleTypeIds: z.array(z.string()).default([]),
   brandIds: z.array(z.string()).default([]),
@@ -65,7 +81,13 @@ export const promoSlideSchema = z.object({
   subtitle: z.string().min(2, "Alt başlık en az 2 karakter olmalı.").max(150),
   description: z.string().min(5, "Açıklama en az 5 karakter olmalı.").max(500),
   ctaText: z.string().min(2, "Buton metni en az 2 karakter olmalı.").max(50),
-  ctaHref: z.string().min(1, "Link girin.").max(300),
+  ctaHref: z
+    .string()
+    .min(1, "Link girin.")
+    .max(300)
+    .refine(isSafeHref, {
+      message: "Geçerli bir http(s), mailto, tel veya site içi link girin.",
+    }),
   image: optionalUrl,
   gradient: z.string().min(1, "Renk teması seçin."),
   accent: z.string().min(1, "Vurgu rengi seçin."),
@@ -92,6 +114,8 @@ export const contactSchema = z.object({
   subject: z.string().min(3, "Konu en az 3 karakter olmalı.").max(150),
   message: z.string().min(10, "Mesaj en az 10 karakter olmalı.").max(2000),
   website: z.string().max(200).optional(), // honeypot
+  formStartedAt: z.number().int().optional(),
+  turnstileToken: z.string().max(2048).optional(),
 });
 
 export type ContactInput = z.infer<typeof contactSchema>;
