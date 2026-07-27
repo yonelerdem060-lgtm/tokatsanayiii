@@ -1,3 +1,4 @@
+import { MAX_SHOP_GALLERY_IMAGES } from "@/lib/shop-media";
 import { z } from "zod";
 
 function isSafeHref(value: string) {
@@ -49,7 +50,10 @@ export const shopSchema = z.object({
   workingHours: optionalText,
   mapUrl: optionalUrl,
   image: optionalUrl,
-  gallery: z.array(z.string().min(1).max(500).refine(isSafeHref)).max(12).default([]),
+  gallery: z
+    .array(z.string().min(1).max(500).refine(isSafeHref))
+    .max(MAX_SHOP_GALLERY_IMAGES, `En fazla ${MAX_SHOP_GALLERY_IMAGES} görsel yükleyebilirsiniz.`)
+    .default([]),
   categoryIds: z.array(z.string()).default([]),
   vehicleTypeIds: z.array(z.string()).default([]),
   brandIds: z.array(z.string()).default([]),
@@ -99,13 +103,26 @@ export type PromoSlideInput = z.infer<typeof promoSlideSchema>;
 
 export const newsPostSchema = z.object({
   title: z.string().min(3, "Başlık en az 3 karakter olmalı.").max(200),
-  excerpt: z.string().min(10, "Özet en az 10 karakter olmalı.").max(300),
+  excerpt: z
+    .string()
+    .max(300)
+    .optional()
+    .transform((value) => value?.trim() ?? ""),
   content: z.string().min(20, "İçerik en az 20 karakter olmalı."),
   coverImage: optionalUrl,
   isPublished: z.coerce.boolean().default(false),
 });
 
 export type NewsPostInput = z.infer<typeof newsPostSchema>;
+
+/** Özet boşsa içerikten kısa SEO/özet metni üretir */
+export function ensureNewsExcerpt(excerpt: string, content: string, title: string) {
+  const trimmed = excerpt.trim();
+  if (trimmed.length >= 10) return trimmed.slice(0, 300);
+  const fromContent = content.replace(/\s+/g, " ").trim();
+  if (fromContent.length >= 10) return fromContent.slice(0, 280);
+  return `${title} — Tokat Sanayi Sitesi haberi.`.slice(0, 300);
+}
 
 export const contactSchema = z.object({
   name: z.string().min(2, "Ad en az 2 karakter olmalı.").max(100),

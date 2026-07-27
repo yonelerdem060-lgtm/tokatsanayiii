@@ -105,5 +105,10 @@ export const siteConfig = {
       answer:
         "Bu site Tokat Sanayi Sitesi dijital rehberidir. Anasayfadaki arama kutusuna ihtiyaç yazın (ör. lastik, motor, kaporta) veya kategori filtreleriyle ustayı seçin; telefon ve WhatsApp ile doğrudan ulaşın.",
     },
+    {
+      question: "Tokat Sanayi’de acil lastik veya akü bulur muyum?",
+      answer:
+        "Evet. Rehberde lastik, jant ve elektrik kategorilerindeki dükkânları filtreleyebilir, çalışma saatlerini kontrol edip telefonla stok teyidi alabilirsiniz. Özellikle Merkez ve çevre ilçelerden gelen sürücüler için hızlı iletişim amaçlıdır.",
+    },
   ],
 } as const;

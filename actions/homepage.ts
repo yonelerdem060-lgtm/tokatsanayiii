@@ -145,6 +145,7 @@ export async function getShopOfTheWeek() {
       slug: shop.slug,
       description: shop.description,
       address: shop.address,
+      mapUrl: shop.mapUrl,
       phone: shop.phone,
       whatsapp: shop.whatsapp,
       image: shop.image || gallery[0] || null,

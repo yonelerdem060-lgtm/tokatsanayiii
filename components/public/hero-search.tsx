@@ -51,10 +51,11 @@ export function HeroSearch({ categories, vehicleTypes, totalShops }: HeroSearchP
             Tokat Sanayi Sitesi dijital rehberi
           </div>
           <h1 className="text-balance text-[1.75rem] font-semibold leading-tight tracking-tight text-slate-900 sm:text-4xl lg:text-5xl">
-            İhtiyacın olan ustayı hemen bul
+            Tokat Sanayi Sitesi Rehberi
           </h1>
           <p className="mx-auto mt-3 max-w-2xl text-pretty text-sm text-slate-600 sm:mt-4 sm:text-lg">
-            {totalShops}+ işletme · ara, filtrele, tek tıkla telefonla veya WhatsApp ile ulaş.
+            İhtiyacın olan ustayı hemen bul · {totalShops}+ işletme · ara, filtrele, telefon veya
+            WhatsApp ile ulaş.
           </p>
         </div>
 

@@ -94,8 +94,6 @@ export default async function HomePage({ searchParams }: HomePageProps) {
         <AdCtaSection />
       </Suspense>
 
-      <HomeSeoContent />
-
       <section
         id="rehber"
         className="mx-auto w-full max-w-7xl space-y-5 px-4 py-8 sm:px-6 lg:px-8"
@@ -103,7 +101,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
         <Reveal>
           <h2 className="text-title">Tokat Sanayi Sitesi dükkân rehberi</h2>
           <p className="mt-1 text-body">
-            İstersen kategori, araç tipi veya marka ile daralt
+            Kategori, araç tipi veya marka ile Tokat Sanayi esnafını daraltın
           </p>
         </Reveal>
         <Suspense
@@ -124,6 +122,8 @@ export default async function HomePage({ searchParams }: HomePageProps) {
           />
         </Suspense>
       </section>
+
+      <HomeSeoContent />
     </>
   );
 }

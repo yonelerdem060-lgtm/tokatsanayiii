@@ -5,6 +5,7 @@ import { requireAdmin } from "@/lib/admin";
 import { prisma } from "@/lib/db";
 import { SHOPS_PAGE_SIZE, getTotalPages } from "@/lib/pagination";
 import { revalidateShopPublicData } from "@/lib/revalidate-public";
+import { MAX_SHOP_GALLERY_IMAGES } from "@/lib/shop-media";
 import { expandSearchTerms } from "@/lib/smart-search";
 import { deleteUploadedFile } from "@/lib/uploads";
 import { failure, getErrorMessage, slugify, success } from "@/lib/utils";
@@ -139,15 +140,20 @@ function buildShopWhere(filters: {
 }
 
 async function syncShopGallery(shopId: string, gallery: string[], cover: string | null) {
-  const uniqueGallery = [...new Set(gallery.filter(Boolean))];
+  const uniqueGallery = [...new Set(gallery.filter(Boolean))].slice(
+    0,
+    MAX_SHOP_GALLERY_IMAGES,
+  );
   const image =
     cover && uniqueGallery.includes(cover)
       ? cover
       : cover || uniqueGallery[0] || null;
 
-  const ordered = image
-    ? [image, ...uniqueGallery.filter((url) => url !== image)]
-    : uniqueGallery;
+  const ordered = (
+    image
+      ? [image, ...uniqueGallery.filter((url) => url !== image)]
+      : uniqueGallery
+  ).slice(0, MAX_SHOP_GALLERY_IMAGES);
 
   await prisma.shopImage.deleteMany({ where: { shopId } });
   if (ordered.length > 0) {

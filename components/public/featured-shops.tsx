@@ -1,16 +1,11 @@
 "use client";
 
 import { Reveal, Stagger, StaggerItem } from "@/components/public/motion";
+import { ShopAddressLink } from "@/components/public/shop-address-link";
 import type { ShopCardData } from "@/components/public/shop-grid";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  ArrowRight,
-  ImageIcon,
-  MapPin,
-  Phone,
-  Star,
-} from "lucide-react";
+import { ArrowRight, ImageIcon, Phone, Star } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -30,7 +25,9 @@ export function FeaturedShops({ shops }: FeaturedShopsProps) {
               <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
               Öne Çıkan
             </div>
-            <h2 className="text-2xl font-semibold tracking-tight">Öne çıkan firmalar</h2>
+            <h2 className="text-2xl font-semibold tracking-tight">
+              Tokat Sanayi’de öne çıkan firmalar
+            </h2>
             <p className="mt-1 text-sm text-muted-foreground">
               Güvenilir esnaf ve işletmeler — hızlı iletişim
             </p>
@@ -108,10 +105,11 @@ export function FeaturedShops({ shops }: FeaturedShopsProps) {
                   </div>
 
                   <div className="space-y-2 text-sm text-muted-foreground">
-                    <p className="flex items-start gap-2">
-                      <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                      <span className="line-clamp-2">{shop.address}</span>
-                    </p>
+                    <ShopAddressLink
+                      address={shop.address}
+                      mapUrl={shop.mapUrl}
+                      lineClamp
+                    />
                     <p className="flex items-center gap-2">
                       <Phone className="h-4 w-4 shrink-0 text-primary" />
                       {shop.phone}

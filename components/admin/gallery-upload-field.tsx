@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { MAX_SHOP_GALLERY_IMAGES } from "@/lib/shop-media";
 import { ImagePlus, Loader2, Star, Trash2 } from "lucide-react";
 import Image from "next/image";
 import { ChangeEvent, useRef, useState } from "react";
@@ -21,20 +22,20 @@ export function GalleryUploadField({
   gallery,
   onChange,
   uploadUrl = "/api/upload/shops",
-  maxItems = 8,
+  maxItems = MAX_SHOP_GALLERY_IMAGES,
 }: GalleryUploadFieldProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const images = gallery.length > 0 ? gallery : cover ? [cover] : [];
+  const remaining = Math.max(0, maxItems - images.length);
 
   async function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
     const files = Array.from(event.target.files ?? []);
     event.target.value = "";
     if (files.length === 0) return;
 
-    const remaining = maxItems - images.length;
     if (remaining <= 0) {
       setError(`En fazla ${maxItems} görsel ekleyebilirsiniz.`);
       return;
@@ -85,14 +86,20 @@ export function GalleryUploadField({
 
   return (
     <div className="space-y-3">
-      <div>
-        <Label>{label}</Label>
-        <p className="mt-1 text-xs text-muted-foreground">
-          Kapak ve galeri. JPG/PNG/WEBP/GIF. En fazla {maxItems} görsel.
-        </p>
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <Label>{label}</Label>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Görseller Cloudinary’ye yüklenir. JPG/PNG/WEBP/GIF, en fazla 5 MB.
+            Birden fazla seçebilirsiniz (max {maxItems}).
+          </p>
+        </div>
+        <span className="shrink-0 rounded-full bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground">
+          {images.length}/{maxItems}
+        </span>
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
         {images.map((url, index) => {
           const isCover = (cover ?? images[0]) === url;
           return (
@@ -108,7 +115,7 @@ export function GalleryUploadField({
                   </span>
                 )}
               </div>
-              <div className="flex gap-1 p-2">
+              <div className="flex flex-wrap gap-1 p-2">
                 {!isCover && (
                   <Button type="button" size="sm" variant="outline" onClick={() => setAsCover(url)}>
                     <Star className="h-3.5 w-3.5" />
@@ -137,6 +144,9 @@ export function GalleryUploadField({
               <ImagePlus className="h-6 w-6" />
             )}
             {uploading ? "Yükleniyor..." : "Görsel Ekle"}
+            {!uploading && remaining > 0 && (
+              <span className="text-xs">{remaining} hak kaldı</span>
+            )}
           </button>
         )}
       </div>

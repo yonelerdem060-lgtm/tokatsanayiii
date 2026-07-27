@@ -134,14 +134,13 @@ export function HomeSearch({
       <div className="relative mx-auto max-w-4xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
         <div className="text-center">
           <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-blue-100/90">
-            Hızlı arama
+            Tokat Sanayi Sitesi
           </p>
-          <h2 className="mt-1 text-balance text-xl font-bold tracking-tight text-white sm:text-2xl">
-            <span className="sr-only">Tokat Sanayi Sitesi — </span>
-            Ne arıyorsun?
-          </h2>
+          <h1 className="mt-1 text-balance text-xl font-bold tracking-tight text-white sm:text-2xl">
+            Tokat Sanayi Sitesi Rehberi
+          </h1>
           <p className="mt-1 text-sm text-blue-100/85">
-            {totalShops}+ işletme · ustayı, dükkânı veya hizmeti tek aramada bul
+            Oto usta, yedek parça ve dükkân ara · {totalShops}+ işletme
           </p>
         </div>
 
@@ -187,6 +186,7 @@ export function HomeSearch({
                   <button
                     type="button"
                     role="option"
+                    aria-selected="false"
                     className="flex w-full items-center gap-2 px-3.5 py-3 text-left text-sm text-slate-700 transition hover:bg-primary-soft hover:text-primary"
                     onClick={() => applySuggestion(item)}
                   >

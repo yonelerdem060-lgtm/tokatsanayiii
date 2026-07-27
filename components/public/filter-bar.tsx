@@ -294,6 +294,7 @@ export function FilterBar({
                       <button
                         type="button"
                         role="option"
+                        aria-selected="false"
                         className="flex w-full items-center gap-2 px-3 py-2.5 text-left text-sm text-slate-700 transition hover:bg-primary-soft hover:text-primary"
                         onClick={() => applySuggestion(item)}
                       >

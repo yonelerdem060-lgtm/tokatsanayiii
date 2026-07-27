@@ -1,12 +1,13 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
 import { FavoriteButton } from "@/components/public/favorite-button";
-import { Pagination } from "@/components/ui/pagination";
 import { Stagger, StaggerItem } from "@/components/public/motion";
+import { ShopAddressLink } from "@/components/public/shop-address-link";
 import { trackShopClick } from "@/components/public/shop-view-tracker";
+import { Badge } from "@/components/ui/badge";
+import { Pagination } from "@/components/ui/pagination";
 import { cn } from "@/lib/utils";
-import { ArrowUpRight, ImageIcon, MapPin, MessageCircle, Phone } from "lucide-react";
+import { ArrowUpRight, ImageIcon, MessageCircle, Phone } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
@@ -17,6 +18,7 @@ export interface ShopCardData {
   slug: string;
   description: string | null;
   address: string;
+  mapUrl?: string | null;
   phone: string;
   whatsapp?: string | null;
   image: string | null;
@@ -127,12 +129,14 @@ export function ShopCard({ shop, featured, priority }: ShopCardProps) {
               {shop.description}
             </p>
           )}
-
-          <div className="flex items-start gap-2 text-sm text-muted-foreground">
-            <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-            <span className="line-clamp-2">{shop.address}</span>
-          </div>
         </Link>
+
+        <ShopAddressLink
+          address={shop.address}
+          mapUrl={shop.mapUrl}
+          lineClamp
+          className="text-sm text-muted-foreground"
+        />
 
         <div className="flex flex-wrap gap-1.5">
           {shop.categories.slice(0, 2).map((category) => (

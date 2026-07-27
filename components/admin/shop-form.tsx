@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { MultiSelect, MultiSelectOption } from "@/components/ui/multi-select";
 import { Textarea } from "@/components/ui/textarea";
 import { adminPath } from "@/lib/admin-path";
+import { MAX_SHOP_GALLERY_IMAGES } from "@/lib/shop-media";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 
@@ -167,16 +168,24 @@ export function ShopForm({
           required
           placeholder="Tokat Sanayi Sitesi A Blok No:12"
         />
+        <p className="text-xs text-muted-foreground">
+          Bu adres sitede tıklanınca Google Haritalar’da açılır. Mümkünse blok/no
+          ile yazın (ör. Tokat Sanayi Sitesi A Blok No:12).
+        </p>
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="mapUrl">Harita Linki (Google Maps)</Label>
+        <Label htmlFor="mapUrl">Harita Linki (isteğe bağlı)</Label>
         <Input
           id="mapUrl"
           value={mapUrl}
           onChange={(event) => setMapUrl(event.target.value)}
           placeholder="https://maps.google.com/..."
         />
+        <p className="text-xs text-muted-foreground">
+          Boş bırakabilirsiniz. Doldurursanız adres yerine bu özel Google Maps
+          linki kullanılır (daha kesin pin için).
+        </p>
       </div>
 
       <div className="space-y-2">
@@ -187,11 +196,27 @@ export function ShopForm({
           onChange={(event) => setDescription(event.target.value)}
           placeholder="Dükkân hakkında kısa bilgi..."
         />
+        <p className="text-xs text-muted-foreground">
+          Boş bırakırsanız meta description otomatik üretilir. Doldurursanız SEO
+          açıklamasının temelini bu metin oluşturur (kategori, adres, telefon
+          eklenir).
+        </p>
+      </div>
+
+      <div className="rounded-lg border border-blue-100 bg-blue-50/60 px-4 py-3 text-sm text-slate-700">
+        <p className="font-medium text-slate-900">SEO otomatik</p>
+        <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+          Sayfa başlığı, meta description, Open Graph, Twitter kartı, anahtar
+          kelimeler ve yapılandırılmış veri (LocalBusiness) dükkân adı, kategori,
+          marka, adres ve görsellerden otomatik oluşturulur. Ayrı SEO alanı
+          doldurmanız gerekmez.
+        </p>
       </div>
 
       <GalleryUploadField
         cover={image}
         gallery={gallery}
+        maxItems={MAX_SHOP_GALLERY_IMAGES}
         onChange={({ cover, gallery: nextGallery }) => {
           setImage(cover);
           setGallery(nextGallery);

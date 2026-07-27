@@ -73,16 +73,26 @@ export function NewsForm({ initialValues, successHref }: NewsFormProps) {
         />
       </div>
 
+      <div className="rounded-lg border border-blue-100 bg-blue-50/60 px-4 py-3 text-sm text-slate-700">
+        <p className="font-medium text-slate-900">SEO otomatik</p>
+        <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+          Sayfa başlığı, meta description, Open Graph ve haber şeması başlık / özet /
+          görselden otomatik üretilir. Özet boşsa içerikten kısaltılır.
+        </p>
+      </div>
+
       <div className="space-y-2">
-        <Label htmlFor="excerpt">Özet *</Label>
+        <Label htmlFor="excerpt">Özet (isteğe bağlı)</Label>
         <Textarea
           id="excerpt"
           value={excerpt}
           onChange={(e) => setExcerpt(e.target.value)}
-          required
           rows={2}
-          placeholder="Liste ve kartlarda görünecek kısa özet"
+          placeholder="Boş bırakırsanız içerikten otomatik üretilir"
         />
+        <p className="text-xs text-muted-foreground">
+          Liste kartları ve meta description için kullanılır.
+        </p>
       </div>
 
       <ImageUploadField value={coverImage} onChange={setCoverImage} />

@@ -1,13 +1,8 @@
 import { Reveal } from "@/components/public/motion";
+import { ShopAddressLink } from "@/components/public/shop-address-link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  ArrowRight,
-  ImageIcon,
-  MapPin,
-  Phone,
-  Trophy,
-} from "lucide-react";
+import { ArrowRight, ImageIcon, Phone, Trophy } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -17,6 +12,7 @@ export interface WeekShopData {
   slug: string;
   description: string | null;
   address: string;
+  mapUrl?: string | null;
   phone: string;
   whatsapp?: string | null;
   image: string | null;
@@ -40,7 +36,7 @@ export function WeekFeatured({ shop }: WeekFeaturedProps) {
                 <Trophy className="h-3.5 w-3.5" />
                 Haftanın Firması
               </div>
-              <h2 className="text-title">Haftanın öne çıkan firması</h2>
+              <h2 className="text-title">Tokat Sanayi’de haftanın firması</h2>
               <p className="mt-1 text-body">
                 Bu hafta rehberimizde öne çıkardığımız güvenilir işletme
               </p>
@@ -90,10 +86,11 @@ export function WeekFeatured({ shop }: WeekFeaturedProps) {
                 )}
               </div>
 
-              <p className="flex items-start gap-2 text-sm text-muted-foreground">
-                <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                <span>{shop.address}</span>
-              </p>
+              <ShopAddressLink
+                address={shop.address}
+                mapUrl={shop.mapUrl}
+                className="text-sm text-muted-foreground"
+              />
 
               <div className="flex flex-wrap gap-2 pt-1">
                 <Link href={`/dukkan/${shop.slug}`}>

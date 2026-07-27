@@ -24,7 +24,7 @@ model Shop {
   whatsapp         String?
   workingHours     String?  @db.Text 
   mapUrl           String?  @db.Text 
-  image            String? 
+  image            String?  @db.Text 
   isFeatured       Boolean  @default(false)
   featuredSortOrder Int     @default(0)
   isShopOfWeek     Boolean  @default(false)
@@ -47,7 +47,7 @@ model Shop {
 model ShopImage {
   id        String   @id @default(cuid())
   shopId    String
-  url       String  
+  url       String   @db.Text  
   sortOrder Int      @default(0)
   createdAt DateTime @default(now())
 

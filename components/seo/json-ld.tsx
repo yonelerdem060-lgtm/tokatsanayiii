@@ -1,5 +1,6 @@
-import { siteConfig, TOKAT_DISTRICTS } from "@/lib/site-config";
+import { resolveShopMapUrl } from "@/lib/maps";
 import { absoluteUrl, getSiteUrl } from "@/lib/seo";
+import { siteConfig, TOKAT_DISTRICTS } from "@/lib/site-config";
 
 type JsonLdValue = Record<string, unknown> | Record<string, unknown>[];
 
@@ -113,8 +114,17 @@ export function buildShopLocalBusinessSchema(shop: {
   phone: string;
   image: string | null;
   workingHours: string | null;
+  mapUrl?: string | null;
+  categories?: { name: string }[];
+  brands?: { name: string }[];
 }) {
   const url = absoluteUrl(`/dukkan/${shop.slug}`);
+  const knowsAbout = [
+    ...(shop.categories ?? []).map((item) => item.name),
+    ...(shop.brands ?? []).map((item) => item.name),
+    "Tokat Sanayi Sitesi",
+  ];
+
   return {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
@@ -123,6 +133,7 @@ export function buildShopLocalBusinessSchema(shop: {
     url,
     telephone: shop.phone,
     image: shop.image ?? undefined,
+    hasMap: resolveShopMapUrl(shop.address, shop.mapUrl),
     address: {
       "@type": "PostalAddress",
       streetAddress: shop.address,
@@ -134,9 +145,45 @@ export function buildShopLocalBusinessSchema(shop: {
       "@type": "AdministrativeArea",
       name: "Tokat",
     },
+    knowsAbout: knowsAbout.length > 0 ? knowsAbout : undefined,
     parentOrganization: {
       "@id": `${getSiteUrl()}/#organization`,
     },
+  };
+}
+
+export function buildNewsArticleSchema(news: {
+  title: string;
+  slug: string;
+  excerpt: string;
+  coverImage?: string | null;
+  publishedAt?: Date | string | null;
+}) {
+  const url = absoluteUrl(`/haberler/${news.slug}`);
+  const published =
+    news.publishedAt instanceof Date
+      ? news.publishedAt.toISOString()
+      : news.publishedAt
+        ? new Date(news.publishedAt).toISOString()
+        : undefined;
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "NewsArticle",
+    headline: news.title,
+    description: news.excerpt,
+    url,
+    image: news.coverImage ?? undefined,
+    datePublished: published,
+    dateModified: published,
+    author: {
+      "@type": "Organization",
+      name: siteConfig.name,
+    },
+    publisher: {
+      "@id": `${getSiteUrl()}/#organization`,
+    },
+    mainEntityOfPage: url,
   };
 }
 

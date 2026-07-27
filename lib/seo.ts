@@ -14,10 +14,12 @@ export function absoluteUrl(path = "/") {
 }
 
 export const SEO_DEFAULTS = {
-  title: "Tokat Sanayi Sitesi Rehberi",
+  /** ~50 karakter — Wincher 10–60 aralığı, anahtar kelime başta */
+  title: "Tokat Sanayi Sitesi | Dükkân ve Usta Rehberi",
   titleTemplate: "%s | Tokat Sanayi Sitesi",
+  /** ~150 karakter — anahtar kelime başta, CTA net */
   description:
-    "Tokat Sanayi Sitesi dükkân ve usta rehberi. Merkez, Erbaa, Turhal, Niksar ve tüm Tokat ilçelerinden oto tamir, yedek parça, kaporta, lastik ve mobilya esnafını tek yerden bulun.",
+    "Tokat Sanayi Sitesi dükkân rehberi: oto tamir, yedek parça, kaporta, lastik ve mobilya esnafını Merkez, Erbaa, Turhal, Niksar’dan tek tıkla bulun.",
   keywords: [
     "tokat sanayi",
     "tokat sanayi sitesi",

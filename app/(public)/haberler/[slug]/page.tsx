@@ -1,4 +1,10 @@
 import { getNewsBySlug } from "@/actions/news";
+import {
+  JsonLd,
+  buildBreadcrumbSchema,
+  buildNewsArticleSchema,
+} from "@/components/seo/json-ld";
+import { buildNewsMetadata, buildNewsSeoDescription } from "@/lib/auto-seo";
 import { formatTrDate } from "@/lib/dates";
 import Link from "next/link";
 import { ArrowLeft, Calendar } from "lucide-react";
@@ -15,18 +21,14 @@ export async function generateMetadata({ params }: NewsDetailPageProps): Promise
   const result = await getNewsBySlug(slug);
   if (!result.success) return { title: "Haber Bulunamadı" };
   const post = result.data;
-  return {
+  return buildNewsMetadata({
     title: post.title,
-    description: post.excerpt,
-    alternates: { canonical: `/haberler/${post.slug}` },
-    openGraph: {
-      title: post.title,
-      description: post.excerpt,
-      url: `/haberler/${post.slug}`,
-      type: "article",
-      images: post.coverImage ? [{ url: post.coverImage }] : undefined,
-    },
-  };
+    slug: post.slug,
+    excerpt: post.excerpt,
+    content: post.content,
+    coverImage: post.coverImage,
+    publishedAt: post.publishedAt,
+  });
 }
 
 export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
@@ -37,9 +39,32 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
 
   const post = result.data;
   const date = formatTrDate(post.publishedAt ?? post.createdAt);
+  const seoDescription = buildNewsSeoDescription({
+    title: post.title,
+    slug: post.slug,
+    excerpt: post.excerpt,
+    content: post.content,
+  });
 
   return (
     <article className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8">
+      <JsonLd
+        data={buildNewsArticleSchema({
+          title: post.title,
+          slug: post.slug,
+          excerpt: seoDescription,
+          coverImage: post.coverImage,
+          publishedAt: post.publishedAt,
+        })}
+      />
+      <JsonLd
+        data={buildBreadcrumbSchema([
+          { name: "Anasayfa", path: "/" },
+          { name: "Haberler", path: "/haberler" },
+          { name: post.title, path: `/haberler/${post.slug}` },
+        ])}
+      />
+
       <Link
         href="/haberler"
         className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary"

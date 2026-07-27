@@ -7,7 +7,7 @@ import { toDate, toDateOrNull } from "@/lib/dates";
 import { prisma } from "@/lib/db";
 import { deleteUploadedFile } from "@/lib/uploads";
 import { failure, getErrorMessage, slugify, success } from "@/lib/utils";
-import { newsPostSchema } from "@/lib/validations";
+import { ensureNewsExcerpt, newsPostSchema } from "@/lib/validations";
 
 function formatNewsPost(post: {
   id: string;
@@ -101,12 +101,13 @@ export async function createNewsFromInput(input: unknown) {
 
     const data = newsPostSchema.parse(input);
     const slug = await uniqueSlug(data.title);
+    const excerpt = ensureNewsExcerpt(data.excerpt, data.content, data.title);
 
     const post = await prisma.newsPost.create({
       data: {
         title: data.title,
         slug,
-        excerpt: data.excerpt,
+        excerpt,
         content: data.content,
         coverImage: data.coverImage,
         isPublished: data.isPublished,
@@ -139,13 +140,14 @@ export async function updateNewsFromInput(id: string, input: unknown) {
       slugify(data.title) === slugify(existing.title)
         ? existing.slug
         : await uniqueSlug(data.title, id);
+    const excerpt = ensureNewsExcerpt(data.excerpt, data.content, data.title);
 
     const post = await prisma.newsPost.update({
       where: { id },
       data: {
         title: data.title,
         slug,
-        excerpt: data.excerpt,
+        excerpt,
         content: data.content,
         coverImage: data.coverImage,
         isPublished: data.isPublished,

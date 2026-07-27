@@ -1,6 +1,8 @@
 import { getShopBySlug } from "@/actions/shops";
 import { FavoriteButton } from "@/components/public/favorite-button";
+import { ShopAddressLink } from "@/components/public/shop-address-link";
 import { ShopContactActions } from "@/components/public/shop-contact-actions";
+import { ShopGallery } from "@/components/public/shop-gallery";
 import { ShopViewTracker } from "@/components/public/shop-view-tracker";
 import {
   JsonLd,
@@ -9,15 +11,16 @@ import {
 } from "@/components/seo/json-ld";
 import { Badge } from "@/components/ui/badge";
 import {
+  buildShopMetadata,
+  buildShopSeoDescription,
+} from "@/lib/auto-seo";
+import {
   ArrowLeft,
   Clock3,
-  ExternalLink,
-  ImageIcon,
   MapPin,
   Store,
   Trophy,
 } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -36,27 +39,7 @@ export async function generateMetadata({ params }: ShopDetailPageProps): Promise
   const { slug } = await params;
   const result = await getShopBySlug(slug);
   if (!result.success) return { title: "Dükkân Bulunamadı" };
-  const shop = result.data;
-  const description =
-    shop.description ??
-    `${shop.name} — Tokat Sanayi Sitesi. ${shop.address}. Telefon: ${shop.phone}`;
-  return {
-    title: shop.name,
-    description,
-    alternates: { canonical: `/dukkan/${shop.slug}` },
-    openGraph: {
-      title: `${shop.name} | Tokat Sanayi Sitesi`,
-      description,
-      url: `/dukkan/${shop.slug}`,
-      images: shop.image ? [{ url: shop.image }] : undefined,
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: shop.name,
-      description,
-      images: shop.image ? [shop.image] : undefined,
-    },
-  };
+  return buildShopMetadata(result.data);
 }
 
 export default async function ShopDetailPage({ params }: ShopDetailPageProps) {
@@ -67,6 +50,7 @@ export default async function ShopDetailPage({ params }: ShopDetailPageProps) {
   const shop = result.data;
   const whatsappHref = shop.whatsapp ? toWhatsAppLink(shop.whatsapp) : null;
   const gallery = shop.gallery.length > 0 ? shop.gallery : shop.image ? [shop.image] : [];
+  const seoDescription = buildShopSeoDescription(shop);
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6 sm:py-10 lg:px-8">
@@ -74,11 +58,14 @@ export default async function ShopDetailPage({ params }: ShopDetailPageProps) {
         data={buildShopLocalBusinessSchema({
           name: shop.name,
           slug: shop.slug,
-          description: shop.description,
+          description: seoDescription,
           address: shop.address,
           phone: shop.phone,
           image: shop.image,
           workingHours: shop.workingHours,
+          mapUrl: shop.mapUrl,
+          categories: shop.categories,
+          brands: shop.brands,
         })}
       />
       <JsonLd
@@ -109,42 +96,7 @@ export default async function ShopDetailPage({ params }: ShopDetailPageProps) {
       </div>
 
       <div className="mt-4 overflow-hidden rounded-2xl border border-border bg-card sm:mt-6">
-        <div className="relative aspect-[16/10] w-full bg-muted sm:aspect-[21/9]">
-          {gallery[0] ? (
-            <Image
-              src={gallery[0]}
-              alt={shop.name}
-              fill
-              unoptimized
-              priority
-              className="object-cover"
-              sizes="(max-width: 1024px) 100vw, 1024px"
-            />
-          ) : (
-            <div className="flex h-full flex-col items-center justify-center gap-2 text-muted-foreground">
-              <ImageIcon className="h-12 w-12 opacity-40" />
-              <p className="text-sm">Henüz fotoğraf eklenmemiş</p>
-            </div>
-          )}
-        </div>
-
-        {gallery.length > 1 && (
-          <div className="grid grid-cols-2 gap-2 border-b border-border p-3 sm:grid-cols-4">
-            {gallery.slice(1).map((url) => (
-              <div key={url} className="relative aspect-[4/3] overflow-hidden rounded-lg bg-muted">
-                <Image
-                  src={url}
-                  alt=""
-                  fill
-                  unoptimized
-                  loading="lazy"
-                  className="object-cover"
-                  sizes="200px"
-                />
-              </div>
-            ))}
-          </div>
-        )}
+        <ShopGallery name={shop.name} images={gallery} />
 
         <div className="space-y-6 p-4 pb-28 sm:p-8 sm:pb-8">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
@@ -183,20 +135,17 @@ export default async function ShopDetailPage({ params }: ShopDetailPageProps) {
             <div className="rounded-xl border border-border bg-muted/30 p-4">
               <div className="flex items-start gap-3">
                 <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
-                <div>
+                <div className="min-w-0 flex-1">
                   <p className="text-sm font-medium">Adres</p>
-                  <p className="mt-1 text-muted-foreground">{shop.address}</p>
-                  {shop.mapUrl && (
-                    <a
-                      href={shop.mapUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="mt-2 inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
-                    >
-                      Haritada Aç
-                      <ExternalLink className="h-3.5 w-3.5" />
-                    </a>
-                  )}
+                  <div className="mt-1">
+                    <ShopAddressLink
+                      address={shop.address}
+                      mapUrl={shop.mapUrl}
+                      showIcon={false}
+                      showHint
+                      textClassName="text-muted-foreground"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
