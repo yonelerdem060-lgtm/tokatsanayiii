@@ -117,7 +117,7 @@ Proje **MySQL** kullanır (Guzel Hosting cPanel). Yerelden bağlanmak için:
 
 ### Görsel yükleme
 
-Yüklenen dosyalar `public/uploads/` altına kaydedilir. Serverless ortamda kalıcı depolama için Vercel Blob, S3 veya benzeri bir çözüm eklemeniz önerilir.
+Tüm görseller **Cloudinary** üzerinde saklanır (`CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`). Yerel `public/uploads` kullanılmaz; böylece proje deposu hafif kalır ve Vercel gibi serverless ortamlarda görseller kalıcı olur.
 
 ---
 
@@ -134,9 +134,9 @@ components/
   admin/             # Admin formları ve listeler
 lib/                 # DB, validasyon, site ayarları
 prisma/              # Şema, seed, import scriptleri
-public/uploads/      # Yüklenen görseller
 ```
 
+Görseller Cloudinary’de tutulur; repoda `public/uploads` veya büyük slide dosyaları yoktur.
 ---
 
 ## Komutlar

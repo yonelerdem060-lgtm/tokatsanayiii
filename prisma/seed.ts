@@ -221,7 +221,8 @@ async function main() {
         "Tokat Sanayi Sitesi'nde faaliyet gösteren tüm işletmeleri tek platformda buluşturuyoruz. Firmanızı WhatsApp ile kayıt ettirin.",
       ctaText: "WhatsApp Başvuru",
       ctaHref: "https://wa.me/905301129440",
-      image: "/slides/tokat-sanayi-hero-1.png",
+      image:
+        "https://res.cloudinary.com/uis5stag/image/upload/v1785150794/tokat-sanayi/slides/hero-1.png",
       gradient: "from-blue-900 via-blue-800 to-slate-900",
       accent: "text-orange-200",
       sortOrder: 0,
@@ -236,7 +237,8 @@ async function main() {
         "Modern altyapı, güçlü sanayici ve stratejik konum ile sürekli gelişen sanayi sitesi.",
       ctaText: "Keşfet",
       ctaHref: "/hakkimizda",
-      image: "/slides/tokat-sanayi-hero-2.png",
+      image:
+        "https://res.cloudinary.com/uis5stag/image/upload/v1785150795/tokat-sanayi/slides/hero-2.jpg",
       gradient: "from-slate-900 via-amber-900 to-slate-900",
       accent: "text-amber-200",
       sortOrder: 1,
@@ -250,7 +252,8 @@ async function main() {
       description: "Modern atölyeler, temiz altyapı ve güçlü sanayi ekosistemi.",
       ctaText: "Firma Rehberi",
       ctaHref: "/#rehber",
-      image: "/slides/tokat-sanayi-hero-3.jpg",
+      image:
+        "https://res.cloudinary.com/uis5stag/image/upload/v1785150798/tokat-sanayi/slides/hero-3.png",
       gradient: "from-amber-900 via-slate-800 to-slate-900",
       accent: "text-amber-200",
       sortOrder: 2,
