@@ -65,6 +65,9 @@ export const metadata: Metadata = {
       "max-video-preview": -1,
     },
   },
+  verification: {
+    google: "ERUGQCMdEjxgN9gGcIOcGBEzHBTp_QBJbc2bfYB3rTk",
+  },
   category: "business",
   other: {
     "geo.region": "TR-60",
